@@ -18,13 +18,13 @@ import net.minecraft.world.phys.AABB;
 
 import appbot.AppliedBotanics;
 import appbot.ae2.ManaHelper;
+import appbot.ae2.ManaKeyType;
 import vazkii.botania.api.BotaniaForgeCapabilities;
 import vazkii.botania.api.mana.ManaPool;
 import vazkii.botania.api.mana.ManaReceiver;
 import vazkii.botania.api.mana.spark.ManaSpark;
 import vazkii.botania.api.mana.spark.SparkAttachable;
 
-import appeng.api.config.PowerUnits;
 import appeng.api.parts.IPartItem;
 import appeng.api.parts.IPartModel;
 import appeng.items.parts.PartModels;
@@ -121,13 +121,7 @@ public class ManaP2PTunnelPart extends CapabilityP2PTunnelPart<ManaP2PTunnelPart
 
         @Override
         public int getCurrentMana() {
-            return getOutputStream()
-                    .map(part -> {
-                        try (var guard = part.getAdjacentCapability()) {
-                            return guard.get().getCurrentMana();
-                        }
-                    })
-                    .reduce(0, Integer::sum);
+            return 0;
         }
 
         @Override
@@ -145,6 +139,11 @@ public class ManaP2PTunnelPart extends CapabilityP2PTunnelPart<ManaP2PTunnelPart
 
         @Override
         public void receiveMana(int mana) {
+            if (mana <= 0) {
+                // if mana < 0, they're getting free mana...
+                return;
+            }
+
             var outputs = getOutputStream()
                     .filter(part -> {
                         try (var guard = part.getAdjacentCapability()) {
@@ -160,7 +159,7 @@ public class ManaP2PTunnelPart extends CapabilityP2PTunnelPart<ManaP2PTunnelPart
 
             Collections.shuffle(outputs);
 
-            queueTunnelDrain(PowerUnits.AE, mana / 100D);
+            deductTransportCost(mana / 100, ManaKeyType.TYPE);
             var manaForEach = mana / outputs.size();
             var spill = mana % outputs.size();
 

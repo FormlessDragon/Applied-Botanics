@@ -1,5 +1,7 @@
 package appbot.ae2;
 
+import com.google.common.primitives.Ints;
+
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.BlockPos;
@@ -36,27 +38,44 @@ public class ManaExternalStorageStrategy implements ExternalStorageStrategy {
         var receiver = apiCache.find(fromSide);
 
         if (receiver == null) {
-            // If receiver is absent, never query again until the next update.
+            // If storage is absent, never query again until the next update.
             return null;
         }
 
         return new ManaStorageAdapter(receiver, injectOrExtractCallback);
     }
 
-    private record ManaStorageAdapter(ManaReceiver receiver, Runnable injectOrExtractCallback) implements MEStorage {
-
+    private record ManaStorageAdapter(ManaReceiver receiver, Runnable changeListener) implements MEStorage {
         @Override
         public long insert(AEKey what, long amount, Actionable mode, IActionSource source) {
             if (!(what instanceof ManaKey)) {
                 return 0;
             }
 
-            var inserted = (int) Math.min(amount,
-                    ManaHelper.getCapacity(receiver) - receiver.getCurrentMana());
+            if (receiver.isFull()) {
+                return 0;
+            }
 
-            if (inserted > 0 && mode == Actionable.MODULATE) {
-                receiver.receiveMana(inserted);
-                injectOrExtractCallback.run();
+            var amt = Ints.saturatedCast(amount);
+            var prevMana = receiver.getCurrentMana();
+
+            if (mode != Actionable.MODULATE) {
+                // play safe and guess how much is insertable
+                return Math.min(amt, ManaHelper.getCapacity(receiver) - prevMana);
+            }
+
+            // give the mana and measure
+            receiver.receiveMana(amt);
+            var inserted = Math.abs(receiver.getCurrentMana() - prevMana);
+
+            // This is to prevent ManaReceivers that have a constant capacity from
+            // either duping (mana splitter) or causing other unintended issues with mana
+            if (inserted == 0) {
+                inserted = amt;
+            }
+
+            if (inserted > 0) {
+                changeListener.run();
             }
 
             return inserted;
@@ -72,7 +91,7 @@ public class ManaExternalStorageStrategy implements ExternalStorageStrategy {
 
             if (extracted > 0 && mode == Actionable.MODULATE) {
                 receiver.receiveMana(-extracted);
-                injectOrExtractCallback.run();
+                changeListener.run();
             }
 
             return extracted;

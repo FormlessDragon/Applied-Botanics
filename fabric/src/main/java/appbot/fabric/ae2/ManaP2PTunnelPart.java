@@ -121,13 +121,7 @@ public class ManaP2PTunnelPart extends CapabilityP2PTunnelPart<ManaP2PTunnelPart
 
         @Override
         public int getCurrentMana() {
-            return getOutputStream()
-                    .map(part -> {
-                        try (var guard = part.getAdjacentCapability()) {
-                            return guard.get().getCurrentMana();
-                        }
-                    })
-                    .reduce(0, Integer::sum);
+            return 0;
         }
 
         @Override
@@ -145,6 +139,11 @@ public class ManaP2PTunnelPart extends CapabilityP2PTunnelPart<ManaP2PTunnelPart
 
         @Override
         public void receiveMana(int mana) {
+            if (mana <= 0) {
+                // if mana < 0, they're getting free mana...
+                return;
+            }
+
             var outputs = getOutputStream()
                     .filter(part -> {
                         try (var guard = part.getAdjacentCapability()) {

@@ -1,5 +1,7 @@
 package appbot.ae2;
 
+import com.google.common.primitives.Ints;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -11,8 +13,8 @@ import vazkii.botania.api.mana.ManaReceiver;
 import appeng.api.behaviors.StackExportStrategy;
 import appeng.api.behaviors.StackTransferContext;
 import appeng.api.config.Actionable;
+import appeng.api.config.PowerMultiplier;
 import appeng.api.stacks.AEKey;
-import appeng.api.storage.StorageHelper;
 
 @SuppressWarnings("UnstableApiUsage")
 public class ManaStorageExportStrategy implements StackExportStrategy {
@@ -39,17 +41,36 @@ public class ManaStorageExportStrategy implements StackExportStrategy {
             return 0;
         }
 
-        var insertable = (int) Math.min(amount,
-                ManaHelper.getCapacity(receiver) - receiver.getCurrentMana());
-        var extracted = (int) StorageHelper.poweredExtraction(context.getEnergySource(),
-                context.getInternalStorage().getInventory(), ManaKey.KEY, insertable, context.getActionSource(),
-                Actionable.MODULATE);
+        // expanded StorageHelper.poweredExtraction to insert mid probe
+        var energy = context.getEnergySource();
+        var inv = context.getInternalStorage().getInventory();
+        var request = ManaKey.KEY;
+        var src = context.getActionSource();
 
-        if (extracted > 0) {
-            receiver.receiveMana(extracted);
+        var retrieved = inv.extract(request, amount, Actionable.SIMULATE, src);
+
+        var energyFactor = Math.max(1.0, request.getAmountPerOperation());
+        var availablePower = energy.extractAEPower(retrieved / energyFactor, Actionable.SIMULATE,
+                PowerMultiplier.CONFIG);
+        var itemToExtract = (int) Math.min((long) (availablePower * energyFactor + 0.9), retrieved);
+
+        if (itemToExtract == 0) {
+            return 0;
         }
 
-        return extracted;
+        // probed plausible amount above, insert and measure
+        var prevMana = receiver.getCurrentMana();
+        receiver.receiveMana(itemToExtract);
+        var inserted = Math.abs(receiver.getCurrentMana() - prevMana);
+
+        // This is to prevent ManaReceivers that have a constant capacity from
+        // either duping (mana splitter) or causing other unintended issues with mana
+        if (inserted == 0) {
+            inserted = itemToExtract;
+        }
+
+        energy.extractAEPower(inserted / energyFactor, Actionable.MODULATE, PowerMultiplier.CONFIG);
+        return inv.extract(request, inserted, Actionable.MODULATE, src);
     }
 
     @Override
@@ -60,14 +81,26 @@ public class ManaStorageExportStrategy implements StackExportStrategy {
 
         var receiver = apiCache.find(fromSide);
 
-        if (receiver == null) {
+        if (receiver == null || receiver.isFull()) {
             return 0;
         }
 
-        var inserted = (int) Math.min(amount, ManaHelper.getCapacity(receiver) - receiver.getCurrentMana());
+        var amt = Ints.saturatedCast(amount);
+        var prevMana = receiver.getCurrentMana();
 
-        if (inserted > 0 && mode == Actionable.MODULATE) {
-            receiver.receiveMana(inserted);
+        if (mode != Actionable.MODULATE) {
+            // play safe and guess how much is insertable
+            return Math.min(amt, ManaHelper.getCapacity(receiver) - prevMana);
+        }
+
+        // give the mana and measure
+        receiver.receiveMana(amt);
+        var inserted = Math.abs(receiver.getCurrentMana() - prevMana);
+
+        // This is to prevent ManaReceivers that have a constant capacity from
+        // either duping (mana splitter) or causing other unintended issues with mana
+        if (inserted == 0) {
+            inserted = amt;
         }
 
         return inserted;
