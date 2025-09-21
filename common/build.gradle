@@ -48,10 +48,11 @@ repositories {
 dependencies {
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
 
-    modImplementation("net.fabricmc:fabric-loader:${rootProject.loader_version}")
+    modImplementation("net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}")
 
-    // just for remapping
+    // only for PortableManaCellItem -> ... -> FabricItem
     modCompileOnly("net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}")
+
     modCompileOnly("appeng:appliedenergistics2-fabric:${rootProject.ae2_version}") {
         transitive = false
     }
