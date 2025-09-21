@@ -16,6 +16,7 @@ import appeng.api.stacks.KeyCounter;
 import appeng.api.storage.cells.CellState;
 import appeng.api.storage.cells.ISaveProvider;
 import appeng.api.storage.cells.StorageCell;
+import appeng.core.definitions.AEItems;
 
 public class ManaCellInventory implements StorageCell {
 
@@ -25,6 +26,7 @@ public class ManaCellInventory implements StorageCell {
     private final ItemStack i;
     @Nullable
     private final ISaveProvider container;
+    private final boolean hasVoidUpgrade;
 
     private long storedMana;
     private boolean isPersisted = true;
@@ -34,6 +36,7 @@ public class ManaCellInventory implements StorageCell {
         this.i = o;
         this.container = container;
         this.storedMana = getTag().getLong(AMOUNT);
+        this.hasVoidUpgrade = cellType.getUpgrades(o).isInstalled(AEItems.VOID_CARD);
     }
 
     private CompoundTag getTag() {
@@ -95,7 +98,7 @@ public class ManaCellInventory implements StorageCell {
             saveChanges();
         }
 
-        return inserted;
+        return hasVoidUpgrade ? amount : inserted;
     }
 
     @Override

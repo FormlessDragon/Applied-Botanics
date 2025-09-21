@@ -60,6 +60,7 @@ subprojects {
             removeUnusedImports()
             toggleOffOn()
             eclipse().configFile(rootProject.file("codeformat/codeformat.xml"))
+            importOrderFile(rootProject.file("codeformat/ae2.importorder"))
         }
 
         format("json") {

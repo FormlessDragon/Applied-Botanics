@@ -23,6 +23,9 @@ import appbot.AppliedBotanics;
 import appbot.item.cell.IManaCellItem;
 
 import appeng.api.storage.StorageCells;
+import appeng.api.upgrades.IUpgradeInventory;
+import appeng.api.upgrades.UpgradeInventories;
+import appeng.core.localization.PlayerMessages;
 import appeng.hooks.AEToolItem;
 import appeng.util.InteractionUtil;
 
@@ -37,6 +40,11 @@ public class ManaCellItem extends Item implements IManaCellItem, AEToolItem {
         this.coreItem = coreItem;
         this.totalBytes = kilobytes * 1000;
         this.idleDrain = idleDrain;
+    }
+
+    @Override
+    public IUpgradeInventory getUpgrades(ItemStack is) {
+        return UpgradeInventories.forItem(is, 1);
     }
 
     @Override
@@ -70,10 +78,22 @@ public class ManaCellItem extends Item implements IManaCellItem, AEToolItem {
                 var list = inv.getAvailableStacks();
                 if (list.isEmpty()) {
                     playerInventory.setItem(playerInventory.selected, ItemStack.EMPTY);
+
+                    // drop core
                     playerInventory.placeItemBackInInventory(new ItemStack(coreItem));
+
+                    // drop upgrades
+                    for (var upgrade : this.getUpgrades(stack)) {
+                        playerInventory.placeItemBackInInventory(upgrade);
+                    }
+
+                    // drop empty storage cell case
                     playerInventory
                             .placeItemBackInInventory(new ItemStack(AppliedBotanics.getInstance().manaCellHousing()));
+
                     return true;
+                } else {
+                    player.displayClientMessage(PlayerMessages.OnlyEmptyCellsCanBeDisassembled.text(), true);
                 }
             }
         }

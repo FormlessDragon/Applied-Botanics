@@ -9,22 +9,12 @@ import net.minecraft.world.item.ItemStack;
 
 import appeng.api.config.FuzzyMode;
 import appeng.api.storage.cells.ICellWorkbenchItem;
-import appeng.util.ConfigInventory;
 
 public interface IManaCellItem extends ICellWorkbenchItem {
+
     long getTotalBytes();
 
     double getIdleDrain();
-
-    @Override
-    default boolean isEditable(ItemStack is) {
-        return false;
-    }
-
-    @Override
-    default ConfigInventory getConfigInventory(ItemStack is) {
-        return null;
-    }
 
     @Override
     default FuzzyMode getFuzzyMode(ItemStack is) {

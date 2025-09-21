@@ -118,6 +118,7 @@ public class ABItems {
             var cell = get(tier);
             var portable = getPortable(tier);
 
+            Upgrades.add(AEItems.VOID_CARD, cell, 1, GuiText.StorageCells.getTranslationKey());
             Upgrades.add(AEItems.ENERGY_CARD, portable, 2, GuiText.PortableCells.getTranslationKey());
 
             StorageCellModels.registerModel(cell,

@@ -135,6 +135,7 @@ public class ABItems {
                 var cell = get(tier);
                 var portable = getPortable(tier);
 
+                Upgrades.add(AEItems.VOID_CARD, cell.get(), 1, GuiText.StorageCells.getTranslationKey());
                 Upgrades.add(AEItems.ENERGY_CARD, portable.get(), 2, GuiText.PortableCells.getTranslationKey());
 
                 var id = AppliedBotanics.id("block/drive/cells/" + cell.getId().getPath());
