@@ -1,8 +1,5 @@
 package appbot.ae2;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -18,7 +15,6 @@ import appeng.api.config.Actionable;
 @SuppressWarnings("UnstableApiUsage")
 public class ManaStorageImportStrategy implements StackImportStrategy {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ManaStorageImportStrategy.class);
     private final Lookup<ManaReceiver, Direction> apiCache;
     private final Direction fromSide;
 

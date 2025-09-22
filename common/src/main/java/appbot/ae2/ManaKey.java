@@ -1,5 +1,6 @@
 package appbot.ae2;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
@@ -15,6 +16,7 @@ import vazkii.botania.client.fx.WispParticleData;
 
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.AEKeyType;
+import appeng.api.stacks.AmountFormat;
 
 public class ManaKey extends AEKey {
 
@@ -76,5 +78,15 @@ public class ManaKey extends AEKey {
     @Override
     protected Component computeDisplayName() {
         return ManaKeyType.MANA;
+    }
+
+    @Override
+    public String formatAmount(long amount, AmountFormat format) {
+        if (format == AmountFormat.FULL) {
+            var units = amount / (double) getType().getAmountPerUnit();
+            return NumberFormat.getNumberInstance().format(units) + (units == 1 ? " pool" : " pools");
+        }
+
+        return super.formatAmount(amount, format);
     }
 }
