@@ -15,7 +15,7 @@ public class ManaHelper {
         } else if (receiver instanceof SparkAttachable sparkAttachable) {
             return receiver.getCurrentMana() + sparkAttachable.getAvailableSpaceForMana();
         } else if (!receiver.isFull()) {
-            return 1000;
+            return receiver.getCurrentMana() + 1000;
         }
 
         return 0;

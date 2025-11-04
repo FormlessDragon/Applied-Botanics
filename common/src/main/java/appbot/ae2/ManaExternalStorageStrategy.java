@@ -52,29 +52,9 @@ public class ManaExternalStorageStrategy implements ExternalStorageStrategy {
                 return 0;
             }
 
-            if (receiver.isFull()) {
-                return 0;
-            }
+            var inserted = SafeMana.conv(receiver).insert(Ints.saturatedCast(amount), mode);
 
-            var amt = Ints.saturatedCast(amount);
-            var prevMana = receiver.getCurrentMana();
-
-            if (mode != Actionable.MODULATE) {
-                // play safe and guess how much is insertable
-                return Math.min(amt, ManaHelper.getCapacity(receiver) - prevMana);
-            }
-
-            // give the mana and measure
-            receiver.receiveMana(amt);
-            var inserted = Math.abs(receiver.getCurrentMana() - prevMana);
-
-            // This is to prevent ManaReceivers that have a constant capacity from
-            // either duping (mana splitter) or causing other unintended issues with mana
-            if (inserted == 0 && !receiver.isFull()) {
-                inserted = amt;
-            }
-
-            if (inserted > 0) {
+            if (inserted > 0 && mode == Actionable.MODULATE) {
                 changeListener.run();
             }
 
@@ -87,10 +67,9 @@ public class ManaExternalStorageStrategy implements ExternalStorageStrategy {
                 return 0;
             }
 
-            var extracted = (int) Math.min(amount, receiver.getCurrentMana());
+            var extracted = SafeMana.conv(receiver).extract(Ints.saturatedCast(amount), mode);
 
             if (extracted > 0 && mode == Actionable.MODULATE) {
-                receiver.receiveMana(-extracted);
                 changeListener.run();
             }
 

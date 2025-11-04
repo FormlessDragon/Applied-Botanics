@@ -19,12 +19,14 @@ import net.minecraft.world.phys.AABB;
 import appbot.AppliedBotanics;
 import appbot.ae2.ManaHelper;
 import appbot.ae2.ManaKeyType;
+import appbot.ae2.SafeMana;
 import vazkii.botania.api.BotaniaForgeCapabilities;
 import vazkii.botania.api.mana.ManaPool;
 import vazkii.botania.api.mana.ManaReceiver;
 import vazkii.botania.api.mana.spark.ManaSpark;
 import vazkii.botania.api.mana.spark.SparkAttachable;
 
+import appeng.api.config.Actionable;
 import appeng.api.parts.IPartItem;
 import appeng.api.parts.IPartModel;
 import appeng.items.parts.PartModels;
@@ -107,7 +109,7 @@ public class ManaP2PTunnelPart extends CapabilityP2PTunnelPart<ManaP2PTunnelPart
         }
     }
 
-    private class InputHandler implements ManaReceiver, ManaPool {
+    private class InputHandler implements ManaReceiver, ManaPool, SafeMana {
 
         @Override
         public Level getManaReceiverLevel() {
@@ -209,9 +211,27 @@ public class ManaP2PTunnelPart extends CapabilityP2PTunnelPart<ManaP2PTunnelPart
         @Override
         public void setColor(Optional<DyeColor> color) {
         }
+
+        @Override
+        public int insert(int amount, Actionable mode) {
+            var inserted = 0;
+
+            for (var output : getOutputs()) {
+                try (var guard = output.getAdjacentCapability()) {
+                    inserted += SafeMana.conv(guard.get()).insert(amount - inserted, mode);
+                }
+            }
+
+            return inserted;
+        }
+
+        @Override
+        public int extract(int amount, Actionable mode) {
+            return 0;
+        }
     }
 
-    private class EmptyHandler implements ManaReceiver {
+    private class EmptyHandler implements ManaReceiver, SafeMana {
 
         @Override
         public Level getManaReceiverLevel() {
@@ -240,6 +260,16 @@ public class ManaP2PTunnelPart extends CapabilityP2PTunnelPart<ManaP2PTunnelPart
         @Override
         public boolean canReceiveManaFromBursts() {
             return false;
+        }
+
+        @Override
+        public int insert(int amount, Actionable mode) {
+            return 0;
+        }
+
+        @Override
+        public int extract(int amount, Actionable mode) {
+            return 0;
         }
     }
 }

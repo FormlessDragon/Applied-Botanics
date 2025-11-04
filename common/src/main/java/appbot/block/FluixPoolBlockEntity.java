@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import appbot.AppliedBotanics;
 import appbot.ae2.ManaKey;
+import appbot.ae2.SafeMana;
 import appbot.mixins.ManaPoolBlockEntityAccessor;
 import vazkii.botania.common.block.block_entity.mana.ManaPoolBlockEntity;
 
@@ -28,7 +29,7 @@ import appeng.me.helpers.BlockEntityNodeListener;
 import appeng.me.helpers.IGridConnectedBlockEntity;
 
 public class FluixPoolBlockEntity extends ManaPoolBlockEntity
-        implements IInWorldGridNodeHost, IGridConnectedBlockEntity {
+        implements IInWorldGridNodeHost, IGridConnectedBlockEntity, SafeMana {
 
     private final ManaPoolBlockEntityAccessor mana = (ManaPoolBlockEntityAccessor) this;
     private final IManagedGridNode mainNode = GridHelper.createManagedNode(this, BlockEntityNodeListener.INSTANCE)
@@ -233,5 +234,45 @@ public class FluixPoolBlockEntity extends ManaPoolBlockEntity
 
         // currentMana / (currentMana + freeMana) * 15
         return (int) Math.ceil(1 / (1 + (double) freeMana / currentMana) * 15.0);
+    }
+
+    @Override
+    public int insert(int amount, Actionable mode) {
+        var grid = getMainNode().getGrid();
+
+        if (grid == null || !getMainNode().isActive()) {
+            return 0;
+        }
+
+        var storage = grid.getStorageService().getInventory();
+        var inserted = StorageHelper.poweredInsert(grid.getEnergyService(), storage, ManaKey.KEY, amount, actionSource,
+                mode);
+
+        if (inserted != 0 && mode == Actionable.MODULATE) {
+            setChanged();
+            markDispatchable();
+        }
+
+        return Math.toIntExact(inserted);
+    }
+
+    @Override
+    public int extract(int amount, Actionable mode) {
+        var grid = getMainNode().getGrid();
+
+        if (grid == null || !getMainNode().isActive()) {
+            return 0;
+        }
+
+        var storage = grid.getStorageService().getInventory();
+        var extracted = StorageHelper.poweredExtraction(grid.getEnergyService(), storage, ManaKey.KEY, amount,
+                actionSource, mode);
+
+        if (extracted != 0 && mode == Actionable.MODULATE) {
+            setChanged();
+            markDispatchable();
+        }
+
+        return Math.toIntExact(extracted);
     }
 }

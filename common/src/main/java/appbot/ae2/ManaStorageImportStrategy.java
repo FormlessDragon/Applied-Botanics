@@ -1,5 +1,7 @@
 package appbot.ae2;
 
+import com.google.common.primitives.Ints;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -11,6 +13,7 @@ import vazkii.botania.api.mana.ManaReceiver;
 import appeng.api.behaviors.StackImportStrategy;
 import appeng.api.behaviors.StackTransferContext;
 import appeng.api.config.Actionable;
+import appeng.core.AELog;
 
 @SuppressWarnings("UnstableApiUsage")
 public class ManaStorageImportStrategy implements StackImportStrategy {
@@ -31,31 +34,45 @@ public class ManaStorageImportStrategy implements StackImportStrategy {
             return false;
         }
 
-        var receiver = apiCache.find(fromSide);
+        if (context.isInFilter(ManaKey.KEY) == context.isInverted()) {
+            return false;
+        }
+
+        var receiver = SafeMana.conv(apiCache.find(fromSide));
 
         if (receiver == null) {
             return false;
         }
 
-        var remainingTransferAmount = context.getOperationsRemaining()
-                * (long) ManaKeyType.TYPE.getAmountPerOperation();
+        var amountPerOperation = ManaKeyType.TYPE.getAmountPerOperation();
+        long maxTransfer = context.getOperationsRemaining()
+                * (long) amountPerOperation;
 
-        var inv = context.getInternalStorage();
-
-        var amount = (int) Math.min(remainingTransferAmount, receiver.getCurrentMana());
-
-        if (amount <= 0) {
+        if (maxTransfer <= 0) {
             return false;
         }
 
-        var inserted = (int) inv.getInventory().insert(ManaKey.KEY, amount, Actionable.MODULATE,
-                context.getActionSource());
+        // see how much we could take
+        var inventory = context.getInternalStorage().getInventory();
+        var simulate = inventory.insert(ManaKey.KEY, maxTransfer, Actionable.SIMULATE, context.getActionSource());
 
-        receiver.receiveMana(-inserted);
+        // take up to that much
+        var extracted = receiver.extract(Ints.saturatedCast(simulate), Actionable.MODULATE);
 
-        var opsUsed = Math.max(1, inserted / ManaKeyType.TYPE.getAmountPerOperation());
-        context.reduceOperationsRemaining(opsUsed);
+        // insert to network
+        var inserted = inventory.insert(ManaKey.KEY, extracted, Actionable.MODULATE, context.getActionSource());
 
-        return true;
+        if (inserted < extracted) {
+            // try to give back overflow
+            var difference = extracted - inserted;
+            difference -= receiver.insert(Ints.saturatedCast(difference), Actionable.MODULATE);
+
+            if (difference != 0) {
+                AELog.warn("Extracted %d Mana from adjacent storage and voided it because network refused insert");
+            }
+        }
+
+        context.reduceOperationsRemaining((inserted + amountPerOperation - 1) / amountPerOperation);
+        return false;
     }
 }

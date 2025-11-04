@@ -5,7 +5,11 @@
   "mixins": [
     "BotaniaBlockEntitiesMixin",
     "ManaPoolBlockEntityAccessor",
-    "ManaPoolBlockEntityRendererMixin"
+    "ManaPoolBlockEntityRendererMixin",
+    "Pool",
+    "TAPBE",
+    "ClampedAboveInsertOnly",
+    "FullPassthroughInsertOnly"
   ],
   "injectors": {
     "defaultRequire": 1

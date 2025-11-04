@@ -21,7 +21,7 @@ import appeng.api.behaviors.GenericInternalInventory;
 import appeng.api.config.Actionable;
 
 @SuppressWarnings("UnstableApiUsage")
-public class ManaGenericStackInvStorage implements ManaReceiver, ManaPool, SparkAttachable {
+public class ManaGenericStackInvStorage implements ManaReceiver, ManaPool, SparkAttachable, SafeMana {
 
     private final Level level;
     private final BlockPos pos;
@@ -124,6 +124,7 @@ public class ManaGenericStackInvStorage implements ManaReceiver, ManaPool, Spark
         return !isFull();
     }
 
+    @Override
     public int insert(int amount, Actionable actionable) {
         var inserted = 0L;
 
@@ -134,7 +135,8 @@ public class ManaGenericStackInvStorage implements ManaReceiver, ManaPool, Spark
         return (int) inserted;
     }
 
-    private int extract(int amount, Actionable actionable) {
+    @Override
+    public int extract(int amount, Actionable actionable) {
         var extracted = 0L;
 
         for (var i = 0; i < inv.size() && extracted < amount; i++) {
