@@ -2,9 +2,11 @@ package appbot.item;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -45,6 +47,11 @@ public class PortableManaCellItem extends AbstractPortableCell implements IManaC
     public void appendHoverText(ItemStack stack, Level level, List<Component> lines, TooltipFlag advancedTooltips) {
         super.appendHoverText(stack, level, lines, advancedTooltips);
         addCellInformationToTooltip(stack, lines);
+    }
+
+    @Override
+    public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
+        return getCellTooltipImage(stack);
     }
 
     @Override

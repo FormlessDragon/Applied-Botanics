@@ -1,6 +1,7 @@
 package appbot.item;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -12,6 +13,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -111,5 +113,10 @@ public class ManaCellItem extends Item implements IManaCellItem, AEToolItem {
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack is, @Nullable Level level, List<Component> lines, TooltipFlag tooltipFlag) {
         addCellInformationToTooltip(is, lines);
+    }
+
+    @Override
+    public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
+        return getCellTooltipImage(stack);
     }
 }
