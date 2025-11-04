@@ -65,7 +65,7 @@ public class ManaStorageExportStrategy implements StackExportStrategy {
 
         // This is to prevent ManaReceivers that have a constant capacity from
         // either duping (mana splitter) or causing other unintended issues with mana
-        if (inserted == 0) {
+        if (inserted == 0 && !receiver.isFull()) {
             inserted = itemToExtract;
         }
 

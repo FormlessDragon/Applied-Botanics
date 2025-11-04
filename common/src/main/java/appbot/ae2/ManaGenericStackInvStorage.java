@@ -50,7 +50,7 @@ public class ManaGenericStackInvStorage implements ManaReceiver, ManaPool, Spark
 
     @Override
     public boolean isFull() {
-        return insert(1, Actionable.SIMULATE) != 0;
+        return insert(1, Actionable.SIMULATE) == 0;
     }
 
     @Override
