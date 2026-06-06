@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "variant=creative": { "model": "appbot:fluix_mana_pool" },
+    "variant=default": { "model": "appbot:fluix_mana_pool" },
+    "variant=diluted": { "model": "appbot:fluix_mana_pool" },
+    "variant=fabulous": { "model": "appbot:fluix_mana_pool" }
+  }
+}
