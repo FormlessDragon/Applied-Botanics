@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "appbot.mixins",
+  "target": "@env(MOD)",
+  "mixins": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

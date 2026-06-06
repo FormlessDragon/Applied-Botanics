@@ -1,0 +1,39 @@
+apply from: 'gradle/scripts/helpers.gradle'
+
+repositories {
+    // Other repositories described by default:
+    // CleanroomMC: https://maven.cleanroommc.com
+    flatDir {
+        dirs("lib")
+    }
+    maven {
+        name = 'CurseMaven'
+        url = 'https://cursemaven.com'
+    }
+    maven {
+        name = 'CleanroomCurseMaven'
+        url = 'https://curse.cleanroommc.com'
+    }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+    }
+    mavenCentral()
+    mavenLocal() // Must be last for caching to work
+}
+
+dependencies {
+    compileOnly "com.cleanroommc:sponge-mixin:0.20.13+mixin.0.8.7"
+    if (propertyBool('enable_lwjglx')) {
+        compileOnly "com.cleanroommc:lwjglx:1.0.0"
+    }
+
+    modImplementation ":AppliedEnergistics2-Supergiant:0.0.0+e39f434d5:dev"
+
+    // 1.12.2 runtime dependencies used by the Supergiant development environment.
+    modImplementation "curse.maven:had-enough-items-557549:7938914"
+    modImplementation "curse.maven:the-one-probe-245211:2667280"
+    modImplementation "curse.maven:baubles-227083:2518667"
+
+    modImplementation "curse.maven:botania-225643:3330934"
+}

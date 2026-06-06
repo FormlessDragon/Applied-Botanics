@@ -1,79 +1,338 @@
 plugins {
-    id 'dev.architectury.loom' version '1.11-SNAPSHOT' apply false
-    id 'architectury-plugin' version '3.4-SNAPSHOT'
-    id 'com.gradleup.shadow' version '8.3.6' apply false
-    id 'com.matthewprenger.cursegradle' version '1.4.0' apply false
-    id 'com.modrinth.minotaur' version '2.8.4' apply false
-    id 'com.diffplug.spotless' version '7.2.1' apply false
-    id "com.dorongold.task-tree" version "4.0.1" apply false
+    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'com.gradleup.shadow' version '9.4.1'
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.4.1'
+    id 'xyz.wagyourtail.unimined' version '1.4.18-kappa'
+    id 'net.kyori.blossom' version '2.2.0'
+    id 'com.diffplug.spotless' version '8.4.0'
 }
 
-allprojects {
-    apply plugin: 'com.dorongold.task-tree'
+import org.jetbrains.gradle.ext.Gradle
+
+apply from: 'gradle/scripts/helpers.gradle'
+
+assertProperty 'mod_version'
+assertProperty 'root_package'
+assertProperty 'mod_id'
+assertProperty 'mod_name'
+
+assertSubProperties 'use_access_transformer', 'access_transformer_locations'
+assertSubProperties 'is_coremod', 'coremod_includes_mod', 'coremod_plugin_class_name'
+assertSubProperties 'use_asset_mover', 'asset_mover_version'
+
+setDefaultProperty 'generate_sources_jar', true, false
+setDefaultProperty 'generate_javadocs_jar', true, false
+setDefaultProperty 'minecraft_username', true, 'Developer'
+setDefaultProperty 'extra_jvm_args', false, ''
+
+version = propertyString('mod_version')
+group = propertyString('root_package')
+
+base {
+    archivesName = propertyString('mod_id')
 }
 
-architectury {
-    minecraft = project.minecraft_version
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+    if (propertyBool('generate_sources_jar')) {
+        withSourcesJar()
+    }
+    if (propertyBool('generate_javadocs_jar')) {
+        withJavadocJar()
+    }
 }
 
-allprojects {
-    group = "me.ramidzkh"
-    version = System.getenv("APPBOT_VERSION") ?: "0.0.0"
+repositories {
+    flatDir {
+        dirs("lib", "G:/repo/Applied-Energistics-2-Supergiant/build/libs")
+    }
+    maven {
+        url = "https://maven.cleanroommc.com"
+    }
+    maven {
+        name = 'CurseMaven'
+        url = 'https://cursemaven.com'
+    }
+    maven {
+        name = 'CleanroomCurseMaven'
+        url = 'https://curse.cleanroommc.com'
+    }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+    }
+    maven {
+        name = "ModMaven"
+        url = uri("https://modmaven.dev/")
+    }
+    mavenCentral()
+    mavenLocal()
 }
 
-subprojects {
-    apply plugin: 'dev.architectury.loom'
-    apply plugin: 'architectury-plugin'
-    apply plugin: 'com.diffplug.spotless'
+configurations {
+    contain
+    implementation.extendsFrom(contain)
+    modCompileOnly
+    compileOnly.extendsFrom(modCompileOnly)
+    modRuntimeOnly
+    runtimeOnly.extendsFrom(modRuntimeOnly)
+}
 
-    loom {
-        silentMojangMappingsLicense()
+String remapTaskName = propertyBool('enable_shadow') ? "remapShadowJar" : "remapJar"
+
+unimined.minecraft {
+    version "1.12.2"
+
+    mappings {
+        mcp("stable", "39-1.12")
     }
 
-    dependencies {
-        minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
-        mappings loom.officialMojangMappings()
+    cleanroom {
+        if (propertyBool('use_access_transformer')) {
+            accessTransformer "${rootProject.projectDir}/src/main/resources/${propertyString('access_transformer_locations')}"
+        }
+        loader "0.5.12-alpha"
+        runs.auth.username = minecraft_username
+        runs.all {
+            systemProperty("crl.dev.mixin", "${mod_id}.mixins.json")
+            def extraArgs = propertyString('extra_jvm_args')
+            if (extraArgs != null && !extraArgs.trim().isEmpty()) {
+                jvmArgs += extraArgs.split { "\\s+" }.toList()
+            }
+            if (propertyBool('enable_foundation_debug')) {
+                systemProperty("foundation.dump", "true")
+                systemProperty("foundation.verbose", "true")
+            }
+            if (propertyBool('is_coremod')) {
+                systemProperty("fml.coreMods.load", propertyString('coremod_plugin_class_name'))
+            }
+            return
+        }
     }
 
-    base {
-        archivesName = "$rootProject.name-$project.name"
+    defaultRemapJar = false
+
+    String jarTaskName = propertyBool('enable_shadow') ? "shadowJar" : "jar"
+
+    remap(tasks.named(jarTaskName).get()) {
+        mixinRemap {
+            enableBaseMixin()
+            enableMixinExtra()
+            disableRefmap()
+        }
     }
 
-    java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+    mods {
+        remap(configurations.modCompileOnly)
+        remap(configurations.modRuntimeOnly)
     }
+}
 
-    tasks.withType(JavaCompile).configureEach {
-        options.release = 17
-        options.encoding = "UTF-8"
+dependencies {
+    if (propertyBool('use_asset_mover')) {
+        implementation "com.cleanroommc:assetmover:${propertyString('asset_mover_version')}"
     }
+    if (propertyBool('enable_junit_testing')) {
+        testImplementation 'org.junit.jupiter:junit-jupiter:6.0.3'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+    compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+}
 
-    /////////////
-    // Spotless
-    spotless {
+apply from: 'gradle/scripts/dependencies.gradle'
+
+configurations.named('compileClasspath').configure {
+    extendsFrom(configurations.named('modImplementation').get())
+}
+
+configurations.named('runtimeClasspath').configure {
+    extendsFrom(configurations.named('modImplementation').get())
+}
+
+sourceSets {
+    main {
         java {
-            target("src/main/java/**/*.java")
-
-            endWithNewline()
-            leadingTabsToSpaces()
-            removeUnusedImports()
-            toggleOffOn()
-            eclipse().configFile(rootProject.file("codeformat/codeformat.xml"))
-            importOrderFile(rootProject.file("codeformat/ae2.importorder"))
+            exclude 'appbot/client/**'
+            exclude 'appbot/botania/**'
+            exclude 'appbot/mixins/**'
+            exclude 'appbot/integration/emi/**'
+            exclude 'appbot/integration/igtooltip/**'
+            exclude 'appbot/integration/jei/**'
+            exclude 'appbot/integration/rei/**'
+            exclude 'appbot/forge/ABMenus.java'
+            exclude 'appbot/forge/ae2/**'
+            exclude 'appbot/forge/client/**'
         }
-
-        format("json") {
-            target("src/main/resources/**/*.json")
-            prettier().config(parser: "json")
+        blossom {
+            javaSources {
+                property('mod_id', propertyString('mod_id'))
+                property('mod_name', propertyString('mod_name'))
+                property('mod_version', propertyString('mod_version'))
+                property('package', propertyString('root_package'))
+            }
+            resources {
+                property('mod_id', propertyString('mod_id'))
+                property('mod_name', propertyString('mod_name'))
+                property('mod_version', propertyString('mod_version'))
+                property('mod_description', propertyString('mod_description'))
+                property('mod_authors', propertyStringList('mod_authors', ',').collect { it.strip() }.join('", "'))
+                property('mod_credits', propertyString('mod_credits'))
+                property('mod_license', propertyString('mod_license'))
+                property('mod_url', propertyString('mod_url'))
+                property('mod_issue_tracker_url', propertyString('mod_issue_tracker_url'))
+                property('mod_update_json', propertyString('mod_update_json'))
+                property('mod_logo_path', propertyString('mod_logo_path'))
+            }
         }
     }
 }
 
-def copyOutputs = tasks.register('copyOutputs', Copy) {
-    from(project(":fabric").remapJar)
-    from(project(":forge").remapJar)
-    into(layout.buildDirectory.dir('distributions'))
+processResources {
+    rename '(.+_at.cfg)', 'META-INF/$1'
+    def resourceProps = [
+        mod_id               : propertyString('mod_id'),
+        mod_name             : propertyString('mod_name'),
+        mod_version          : propertyString('mod_version'),
+        mod_description      : propertyString('mod_description'),
+        mod_authors          : propertyStringList('mod_authors', ',').collect { it.strip() }.join('", "'),
+        mod_credits          : propertyString('mod_credits'),
+        mod_license          : propertyString('mod_license'),
+        mod_url              : propertyString('mod_url'),
+        mod_issue_tracker_url: propertyString('mod_issue_tracker_url'),
+        mod_update_json      : propertyString('mod_update_json'),
+        mod_logo_path        : propertyString('mod_logo_path')
+    ]
+    inputs.properties(resourceProps)
+    filesMatching(['mcmod.info', 'pack.mcmeta']) {
+        expand(resourceProps)
+    }
 }
 
-tasks.maybeCreate('build').dependsOn(copyOutputs)
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+    project {
+        settings {
+            runConfigurations {
+                '1. Build'(Gradle) {
+                    taskNames = ["build"]
+                }
+                '2. Run Client'(Gradle) {
+                    taskNames = ["runClient"]
+                }
+                '3. Run Server'(Gradle) {
+                    taskNames = ["runServer"]
+                }
+            }
+            compiler.javac {
+                afterEvaluate {
+                    javacAdditionalOptions = '-encoding utf8'
+                    moduleJavacAdditionalOptions = [
+                        (project.name + '.main'): tasks.compileJava.options.compilerArgs.collect { '"' + it + '"' }.join(' ')
+                    ]
+                }
+            }
+        }
+    }
+}
+
+if (!propertyBool('enable_shadow')) {
+    shadowJar.enabled = false
+}
+
+compileJava {
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_25
+}
+
+jar {
+    archiveClassifier = 'dev'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    if (configurations.contain.size() > 0) {
+        into('/') {
+            from configurations.contain
+        }
+    }
+    doFirst {
+        manifest {
+            def attribute_map = [:]
+            attribute_map['ModType'] = "CRL"
+            attribute_map['MixinConfigs'] = "${mod_id}.mixins.json"
+            if (configurations.contain.size() > 0) {
+                attribute_map['ContainedDeps'] = configurations.contain.collect { it.name }.join(' ')
+                attribute_map['NonModDeps'] = true
+            }
+            if (propertyBool('is_coremod')) {
+                attribute_map['FMLCorePlugin'] = propertyString('coremod_plugin_class_name')
+                if (propertyBool('coremod_includes_mod')) {
+                    attribute_map['FMLCorePluginContainsFMLMod'] = true
+                }
+            }
+            if (propertyBool('use_access_transformer')) {
+                attribute_map['FMLAT'] = propertyString('access_transformer_locations')
+            }
+            attributes(attribute_map)
+        }
+    }
+    finalizedBy(tasks.named(remapTaskName).get())
+}
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+    archiveClassifier = "shadow"
+}
+
+tasks.named(remapTaskName).configure {
+    doFirst {
+        logging.captureStandardOutput LogLevel.INFO
+    }
+    doLast {
+        logging.captureStandardOutput LogLevel.QUIET
+    }
+}
+
+compileTestJava {
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_25
+}
+
+test {
+    useJUnitPlatform()
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(25)
+    })
+    if (propertyBool('show_testing_output')) {
+        testLogging {
+            showStandardStreams = true
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
+}
+
+spotless {
+    java {
+        target("src/main/java/**/*.java")
+
+        endWithNewline()
+        leadingTabsToSpaces()
+        removeUnusedImports()
+        toggleOffOn()
+        eclipse().configFile(rootProject.file("codeformat/codeformat.xml"))
+        importOrderFile(rootProject.file("codeformat/ae2.importorder"))
+    }
+
+    format("json") {
+        target("src/main/resources/**/*.json")
+        prettier().config(parser: "json")
+    }
+}
+
+apply from: 'gradle/scripts/publishing.gradle'
+apply from: 'gradle/scripts/extra.gradle'

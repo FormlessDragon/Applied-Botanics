@@ -1,14 +1,31 @@
 pluginManagement {
     repositories {
-        maven { url = 'https://maven.fabricmc.net/' }
-        maven { url = 'https://maven.architectury.dev/' }
-        maven { url = 'https://files.minecraftforge.net/maven/' }
-        gradlePluginPortal()
+        gradlePluginPortal() {
+            content {
+                excludeGroup('org.apache.logging.log4j')
+            }
+        }
+        mavenCentral()
+        maven {
+            url = 'https://maven.minecraftforge.net/'
+        }
+        maven {
+            url = 'https://maven.fabricmc.net/'
+        }
+        maven {
+            url = 'https://maven.wagyourtail.xyz/releases'
+        }
+        maven {
+            url = 'https://maven.arcseekers.com/releases'
+        }
+        maven {
+            url = 'https://maven.wagyourtail.xyz/snapshots'
+        }
     }
 }
 
-rootProject.name = 'applied-botanics'
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
 
-include 'common'
-include 'fabric'
-include 'forge'
+rootProject.name = rootProject.projectDir.getName()

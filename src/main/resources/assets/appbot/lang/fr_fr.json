@@ -1,0 +1,32 @@
+{
+  "gui.appbot.mana": "Mana",
+
+  "itemGroup.appbot.tab": "Applied Botanics",
+
+  "block.appbot.fluix_mana_pool": "Bassin de mana Fluix",
+
+  "item.appbot.mana_cell_housing": "Boitier de cellule de mana ME",
+  "item.appbot.creative_mana_cell": "Disque de stockage de mana créatif",
+
+  "item.appbot.mana_storage_cell_1k": "Disque de stockage de mana 1k",
+  "item.appbot.mana_storage_cell_4k": "Disque de stockage de mana 4k",
+  "item.appbot.mana_storage_cell_16k": "Disque de stockage de mana 16k",
+  "item.appbot.mana_storage_cell_64k": "Disque de stockage de mana 64k",
+  "item.appbot.mana_storage_cell_256k": "Disque de stockage de mana 256k",
+
+  "item.appbot.portable_mana_storage_cell_1k": "Disque de mana portable 1k",
+  "item.appbot.portable_mana_storage_cell_4k": "Disque de mana portable 4k",
+  "item.appbot.portable_mana_storage_cell_16k": "Disque de mana portable 16k",
+  "item.appbot.portable_mana_storage_cell_64k": "Disque de mana portable 64k",
+  "item.appbot.portable_mana_storage_cell_256k": "Disque de mana portable 256k",
+
+  "item.appbot.mana_p2p_tunnel": "Tunnel de mana P2P",
+
+  "appbot.entry.fluix_mana_pool": "Bassin de mana Fluix",
+  "appbot.page.fluix_mana_pool0": "Le $(item)bassin de mana Fluix$(0) opère sur le $(thing)mana$(0) du système ME auquel il est relié",
+  "appbot.page.fluix_mana_pool1": "C'est pas si mal",
+
+  "appbot.entry.mana_drives": "Disques de mana",
+  "appbot.page.mana_drives0": "Avez-vous toujours rêvé de jeter la magie sous le bus et de passer au numérique ? Honte à vous.",
+  "appbot.page.mana_drives1": "Exactement ce que vazkii ne voulais pas"
+}
