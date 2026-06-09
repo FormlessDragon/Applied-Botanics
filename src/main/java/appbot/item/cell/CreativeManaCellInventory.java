@@ -1,7 +1,7 @@
 package appbot.item.cell;
 
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 
 import appbot.ae2.ManaKey;
 
@@ -32,7 +32,7 @@ public class CreativeManaCellInventory implements StorageCell {
 
     @Override
     public void getAvailableStacks(KeyCounter out) {
-        out.add(ManaKey.KEY, Integer.MAX_VALUE);
+        out.add(ManaKey.KEY, 1L << 53);
     }
 
     @Override
@@ -48,6 +48,11 @@ public class CreativeManaCellInventory implements StorageCell {
     @Override
     public double getIdleDrain() {
         return 0;
+    }
+
+    @Override
+    public boolean canFitInsideCell() {
+        return false;
     }
 
     @Override

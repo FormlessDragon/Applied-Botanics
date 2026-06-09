@@ -3,8 +3,8 @@ package appbot.ae2;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 
@@ -15,7 +15,8 @@ import ae2.api.config.Actionable;
 import ae2.api.stacks.GenericStack;
 
 @SuppressWarnings("UnstableApiUsage")
-public class ManaContainerItemStrategy implements ContainerItemStrategy<ManaKey, ManaContainerItemStrategy.ManaItemContext> {
+public class ManaContainerItemStrategy
+        implements ContainerItemStrategy<ManaKey, ManaContainerItemStrategy.ManaItemContext> {
 
     @Override
     public @Nullable GenericStack getContainedStack(ItemStack stack) {
@@ -40,6 +41,10 @@ public class ManaContainerItemStrategy implements ContainerItemStrategy<ManaKey,
 
     @Override
     public long extract(ManaItemContext item, ManaKey what, long amount, Actionable mode) {
+        if (!item.canExport()) {
+            return 0;
+        }
+
         var extracted = (int) Math.min(amount, item.getMana());
 
         if (extracted > 0 && mode == Actionable.MODULATE) {
@@ -51,6 +56,10 @@ public class ManaContainerItemStrategy implements ContainerItemStrategy<ManaKey,
 
     @Override
     public long insert(ManaItemContext item, ManaKey what, long amount, Actionable mode) {
+        if (!item.canReceive()) {
+            return 0;
+        }
+
         var inserted = (int) Math.min(amount, item.getMaxMana() - item.getMana());
 
         if (inserted > 0 && mode == Actionable.MODULATE) {
@@ -74,6 +83,10 @@ public class ManaContainerItemStrategy implements ContainerItemStrategy<ManaKey,
 
     @Override
     public @Nullable GenericStack getExtractableContent(ManaItemContext item) {
+        if (!item.canExport()) {
+            return null;
+        }
+
         return new GenericStack(ManaKey.KEY, item.getMana());
     }
 
@@ -101,6 +114,14 @@ public class ManaContainerItemStrategy implements ContainerItemStrategy<ManaKey,
 
         void addMana(int mana) {
             item.addMana(stack, mana);
+        }
+
+        boolean canReceive() {
+            return item.canReceiveManaFromItem(stack, ItemStack.EMPTY);
+        }
+
+        boolean canExport() {
+            return !item.isNoExport(stack) && item.canExportManaToItem(stack, ItemStack.EMPTY);
         }
     }
 }

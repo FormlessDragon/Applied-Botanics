@@ -2,8 +2,8 @@ package appbot.ae2;
 
 import com.google.common.primitives.Ints;
 
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 
 import appbot.AppliedBotanics;

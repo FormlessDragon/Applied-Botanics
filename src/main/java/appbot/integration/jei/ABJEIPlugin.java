@@ -1,27 +1,19 @@
 package appbot.integration.jei;
 
-import org.jetbrains.annotations.NotNull;
-
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.item.ItemStack;
 
 import appbot.AppliedBotanics;
 import mezz.jei.api.IModPlugin;
-import mezz.jei.api.JeiPlugin;
-import mezz.jei.api.registration.IRecipeCatalystRegistration;
-import vazkii.botania.client.integration.jei.ManaPoolRecipeCategory;
+import mezz.jei.api.IModRegistry;
+import mezz.jei.api.JEIPlugin;
+import vazkii.botania.client.integration.jei.manapool.ManaPoolRecipeCategory;
 
-@JeiPlugin
+@JEIPlugin
 public class ABJEIPlugin implements IModPlugin {
 
     @Override
-    public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(AppliedBotanics.getInstance().fluixManaPool()),
-                ManaPoolRecipeCategory.TYPE);
-    }
-
-    @Override
-    public @NotNull ResourceLocation getPluginUid() {
-        return AppliedBotanics.id("main");
+    public void register(IModRegistry registry) {
+        registry.addRecipeCatalyst(new ItemStack(AppliedBotanics.getInstance().fluixManaPool()),
+                ManaPoolRecipeCategory.UID);
     }
 }

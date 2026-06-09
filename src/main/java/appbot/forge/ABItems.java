@@ -1,25 +1,34 @@
 package appbot.forge;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.oredict.OreDictionary;
 
 import appbot.AppliedBotanics;
+import appbot.forge.ae2.ManaP2PTunnelPart;
 import appbot.item.CreativeManaCellItem;
 import appbot.item.ManaCellItem;
 import appbot.item.PortableManaCellItem;
 import appbot.item.cell.CreativeManaCellHandler;
 import appbot.item.cell.ManaCellHandler;
+import vazkii.botania.common.block.ModBlocks;
 
 import ae2.api.client.StorageCellModels;
+import ae2.api.features.P2PTunnelAttunement;
+import ae2.api.parts.PartModels;
 import ae2.api.storage.StorageCells;
 import ae2.api.upgrades.Upgrades;
 import ae2.core.AppEng;
 import ae2.core.definitions.AEItems;
 import ae2.core.localization.GuiText;
+import ae2.items.parts.PartItem;
+import ae2.items.parts.PartModelsHelper;
 
 @Mod.EventBusSubscriber(modid = AppliedBotanics.MOD_ID)
 public final class ABItems {
@@ -32,7 +41,8 @@ public final class ABItems {
     };
 
     public static final Item MANA_CELL_HOUSING = item("mana_cell_housing", new Item());
-    public static final CreativeManaCellItem MANA_CELL_CREATIVE = item("creative_mana_cell", new CreativeManaCellItem());
+    public static final CreativeManaCellItem MANA_CELL_CREATIVE = item("creative_mana_cell",
+            new CreativeManaCellItem());
 
     public static final ManaCellItem MANA_CELL_1K = item("mana_storage_cell_1k",
             new ManaCellItem(AEItems.CELL_COMPONENT_1K.item(), 1, 0.5f));
@@ -55,8 +65,14 @@ public final class ABItems {
             new PortableManaCellItem(64, 2.0));
     public static final PortableManaCellItem PORTABLE_MANA_CELL_256K = item("portable_mana_storage_cell_256k",
             new PortableManaCellItem(256, 2.5));
+    public static final PartItem<ManaP2PTunnelPart> MANA_P2P_TUNNEL = item("mana_p2p_tunnel",
+            new PartItem<>(ManaP2PTunnelPart.class, ManaP2PTunnelPart::new));
 
     private ABItems() {
+    }
+
+    public static void preInit() {
+        PartModels.registerModels(PartModelsHelper.createModels(ManaP2PTunnelPart.class));
     }
 
     @SubscribeEvent
@@ -73,10 +89,18 @@ public final class ABItems {
                 PORTABLE_MANA_CELL_4K,
                 PORTABLE_MANA_CELL_16K,
                 PORTABLE_MANA_CELL_64K,
-                PORTABLE_MANA_CELL_256K);
+                PORTABLE_MANA_CELL_256K,
+                MANA_P2P_TUNNEL);
     }
 
     public static void init() {
+        var manaP2PAttunementTag = P2PTunnelAttunement.getAttunementTag(AppliedBotanics.id("mana_p2p_tunnel"));
+        P2PTunnelAttunement.registerAttunementTag(AppliedBotanics.id("mana_p2p_tunnel"));
+        registerAttunementBridge(manaP2PAttunementTag, ModBlocks.pool.getRegistryName());
+        registerAttunementBridge(manaP2PAttunementTag, ModBlocks.spreader.getRegistryName());
+        registerAttunementBridge(manaP2PAttunementTag, ModBlocks.distributor.getRegistryName());
+        registerAttunementBridge(manaP2PAttunementTag, ModBlocks.manaVoid.getRegistryName());
+
         StorageCells.addCellHandler(ManaCellHandler.INSTANCE);
         StorageCells.addCellHandler(new CreativeManaCellHandler());
 
@@ -119,6 +143,14 @@ public final class ABItems {
         item.setTranslationKey(AppliedBotanics.MOD_ID + "." + name);
         item.setCreativeTab(CREATIVE_TAB);
         return item;
+    }
+
+    private static void registerAttunementBridge(String oreName, ResourceLocation itemId) {
+        Item item = Item.REGISTRY.getObject(itemId);
+        if (item == null || item == Items.AIR) {
+            throw new IllegalStateException("Missing Mana P2P attunement bridge item: " + itemId);
+        }
+        OreDictionary.registerOre(oreName, item);
     }
 
     public enum Tier {

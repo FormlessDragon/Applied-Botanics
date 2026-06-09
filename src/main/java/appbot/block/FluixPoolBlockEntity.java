@@ -4,8 +4,8 @@ import java.util.EnumSet;
 
 import com.google.common.primitives.Ints;
 
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
 import appbot.AppliedBotanics;

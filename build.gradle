@@ -145,6 +145,76 @@ dependencies {
 
 apply from: 'gradle/scripts/dependencies.gradle'
 
+def generatedTagsSourceDir = layout.buildDirectory.dir('generated/sources/tags/java')
+def generateTagsSource = tasks.register('generateTagsSource') {
+    def outputFile = generatedTagsSourceDir.map { it.file("${propertyString('root_package').replace('.', '/')}/Tags.java") }
+
+    inputs.property('mod_id', propertyString('mod_id'))
+    inputs.property('mod_name', propertyString('mod_name'))
+    inputs.property('mod_version', propertyString('mod_version'))
+    outputs.file(outputFile)
+
+    doLast {
+        def file = outputFile.get().asFile
+        file.parentFile.mkdirs()
+        file.text = """package ${propertyString('root_package')};
+
+public final class Tags {
+
+    public static final String MOD_ID = "${propertyString('mod_id')}";
+    public static final String MOD_NAME = "${propertyString('mod_name')}";
+    public static final String VERSION = "${propertyString('mod_version')}";
+
+    private Tags() {
+    }
+}
+"""
+    }
+}
+
+def generatedLegacyLangResourcesDir = layout.buildDirectory.dir('generated/resources/legacy-lang')
+def generateLegacyLangResources = tasks.register('generateLegacyLangResources') {
+    def langSourceDir = layout.projectDirectory.dir('src/main/resources/assets/appbot/lang')
+
+    inputs.files(fileTree(langSourceDir) {
+        include '*.json'
+    })
+    outputs.dir(generatedLegacyLangResourcesDir)
+
+    doLast {
+        def parser = new groovy.json.JsonSlurper()
+        def outputRoot = generatedLegacyLangResourcesDir.get().asFile
+
+        delete(outputRoot)
+        fileTree(langSourceDir) {
+            include '*.json'
+        }.each { sourceFile ->
+            def json = parser.parse(sourceFile) as Map
+            def langFile = new File(outputRoot, "assets/appbot/lang/${sourceFile.name.replace('.json', '.lang')}")
+
+            langFile.parentFile.mkdirs()
+            langFile.withWriter('UTF-8') { writer ->
+                json.each { key, value ->
+                    writer.writeLine("${legacyLangKey(key.toString())}=${value}")
+                }
+            }
+        }
+    }
+}
+
+static String legacyLangKey(String key) {
+    if (key == 'itemGroup.appbot.tab') {
+        return 'itemGroup.appbot'
+    }
+    if (key.startsWith('block.appbot.')) {
+        return 'tile.appbot.' + key.substring('block.appbot.'.length()) + '.name'
+    }
+    if (key.startsWith('item.appbot.')) {
+        return key + '.name'
+    }
+    return key
+}
+
 configurations.named('compileClasspath').configure {
     extendsFrom(configurations.named('modImplementation').get())
 }
@@ -156,16 +226,10 @@ configurations.named('runtimeClasspath').configure {
 sourceSets {
     main {
         java {
-            exclude 'appbot/client/**'
-            exclude 'appbot/botania/**'
-            exclude 'appbot/mixins/**'
+            srcDir generatedTagsSourceDir
+
             exclude 'appbot/integration/emi/**'
-            exclude 'appbot/integration/igtooltip/**'
-            exclude 'appbot/integration/jei/**'
             exclude 'appbot/integration/rei/**'
-            exclude 'appbot/forge/ABMenus.java'
-            exclude 'appbot/forge/ae2/**'
-            exclude 'appbot/forge/client/**'
         }
         blossom {
             javaSources {
@@ -189,9 +253,17 @@ sourceSets {
             }
         }
     }
+
+    test {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
 }
 
 processResources {
+    dependsOn(generateLegacyLangResources)
+    from(generatedLegacyLangResourcesDir)
+
     rename '(.+_at.cfg)', 'META-INF/$1'
     def resourceProps = [
         mod_id               : propertyString('mod_id'),
@@ -245,8 +317,35 @@ if (!propertyBool('enable_shadow')) {
     shadowJar.enabled = false
 }
 
+def syncDevResourcesToClasses = tasks.register('syncDevResourcesToClasses', Copy) {
+    dependsOn(tasks.named('compileJava'), tasks.named('processResources'))
+    doFirst {
+        delete(fileTree(layout.buildDirectory.dir('classes/java/main')) {
+            exclude('**/*.class')
+        })
+    }
+    from(layout.buildDirectory.dir('resources/main')) {
+        exclude('**/*.class')
+    }
+    into(layout.buildDirectory.dir('classes/java/main'))
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.named('classes').configure {
+    dependsOn(syncDevResourcesToClasses)
+}
+
+tasks.matching { it.name.startsWith('preRun') }.configureEach {
+    dependsOn(syncDevResourcesToClasses)
+}
+
 compileJava {
-    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_25
+    dependsOn(generateTagsSource)
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_21
+}
+
+tasks.named('sourcesJar').configure {
+    dependsOn(generateTagsSource)
 }
 
 jar {
