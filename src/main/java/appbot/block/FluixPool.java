@@ -132,7 +132,8 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
     }
 
     @Override
-    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity tile,
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state,
+            @Nullable TileEntity tile,
             ItemStack stack) {
         super.harvestBlock(world, player, pos, state, tile, stack);
         world.setBlockToAir(pos);

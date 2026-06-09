@@ -3,7 +3,11 @@
   "minVersion": "0.8",
   "package": "appbot.mixins",
   "target": "@env(MOD)",
-  "mixins": [],
+  "mixins": [
+    "SafeManaMixin",
+    "ManaP2PTileCableBusMixin",
+    "CorporeaInventoryHelperMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

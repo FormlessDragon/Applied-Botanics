@@ -2,9 +2,9 @@ package appbot.item.cell;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.item.ItemStack;
 
 import appbot.ae2.ManaKey;
 import appbot.ae2.ManaKeyType;
@@ -53,11 +53,8 @@ public class ManaCellInventory implements StorageCell {
         if (this.storedMana == 0) {
             return CellState.EMPTY;
         }
-        if (this.storedMana == getMaxMana()) {
+        if (this.storedMana >= getMaxMana()) {
             return CellState.FULL;
-        }
-        if (this.storedMana > getMaxMana() / 2) {
-            return CellState.TYPES_FULL;
         }
         return CellState.NOT_EMPTY;
     }
@@ -65,6 +62,11 @@ public class ManaCellInventory implements StorageCell {
     @Override
     public double getIdleDrain() {
         return this.cellType.getIdleDrain();
+    }
+
+    @Override
+    public boolean canFitInsideCell() {
+        return false;
     }
 
     private long getMaxMana() {
@@ -96,7 +98,7 @@ public class ManaCellInventory implements StorageCell {
             return 0;
         }
 
-        var inserted = Math.min(getMaxMana() - this.storedMana, amount);
+        var inserted = Math.min(Math.max(0, getMaxMana() - this.storedMana), amount);
 
         if (mode == Actionable.MODULATE) {
             this.storedMana += inserted;

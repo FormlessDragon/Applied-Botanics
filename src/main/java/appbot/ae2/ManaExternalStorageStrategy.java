@@ -4,8 +4,8 @@ import com.google.common.primitives.Ints;
 
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.WorldServer;
 
@@ -42,10 +42,12 @@ public class ManaExternalStorageStrategy implements ExternalStorageStrategy {
             return null;
         }
 
-        return new ManaStorageAdapter(receiver, injectOrExtractCallback);
+        return new ManaStorageAdapter(receiver, injectOrExtractCallback, extractableOnly);
     }
 
-    private record ManaStorageAdapter(IManaReceiver receiver, Runnable changeListener) implements MEStorage {
+    private record ManaStorageAdapter(IManaReceiver receiver, Runnable changeListener, boolean extractableOnly)
+            implements
+                MEStorage {
         @Override
         public long insert(AEKey what, long amount, Actionable mode, IActionSource source) {
             if (!(what instanceof ManaKey)) {
@@ -80,7 +82,7 @@ public class ManaExternalStorageStrategy implements ExternalStorageStrategy {
         public void getAvailableStacks(KeyCounter out) {
             var currentMana = receiver.getCurrentMana();
 
-            if (currentMana != 0) {
+            if (currentMana != 0 && (!extractableOnly || SafeMana.conv(receiver).extract(1, Actionable.SIMULATE) > 0)) {
                 out.add(ManaKey.KEY, currentMana);
             }
         }

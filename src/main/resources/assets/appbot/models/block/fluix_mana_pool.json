@@ -5,7 +5,7 @@
     "main": "appbot:block/fluixpool",
     "inside": "appbot:block/fluixpoolinside",
     "greebles": "appbot:block/fluixpoolgreebles",
-    "particle": "#main"
+    "particle": "appbot:block/fluixpool"
   },
   "elements": [
     {
