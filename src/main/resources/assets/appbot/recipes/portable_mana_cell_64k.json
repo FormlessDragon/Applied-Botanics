@@ -1,0 +1,21 @@
+{
+  "type": "forge:ore_shapeless",
+  "ingredients": [
+    {
+      "item": "ae2:chest"
+    },
+    {
+      "item": "ae2:cell_component_64k"
+    },
+    {
+      "item": "ae2:energy_cell"
+    },
+    {
+      "item": "appbot:mana_cell_housing"
+    }
+  ],
+  "result": {
+    "item": "appbot:portable_mana_cell_64k",
+    "count": 1
+  }
+}

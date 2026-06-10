@@ -105,6 +105,7 @@ public final class ABItems {
 
         StorageCells.addCellHandler(ManaCellHandler.INSTANCE);
         StorageCells.addCellHandler(new CreativeManaCellHandler());
+        ABRecipes.initStorageCellDisassembly();
 
         for (Tier tier : Tier.values()) {
             var cell = get(tier);

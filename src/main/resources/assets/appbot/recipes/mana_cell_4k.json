@@ -1,0 +1,15 @@
+{
+  "type": "forge:ore_shapeless",
+  "ingredients": [
+    {
+      "item": "appbot:mana_cell_housing"
+    },
+    {
+      "item": "ae2:cell_component_4k"
+    }
+  ],
+  "result": {
+    "item": "appbot:mana_cell_4k",
+    "count": 1
+  }
+}

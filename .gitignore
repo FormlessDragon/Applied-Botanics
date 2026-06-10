@@ -4,5 +4,6 @@
 build/
 run/
 logs/
+docs/
 src/test
 AGENTS.md

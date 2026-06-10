@@ -1,0 +1,25 @@
+{
+  "type": "forge:ore_shaped",
+  "pattern": [
+    "QSQ",
+    "S S",
+    "III"
+  ],
+  "key": {
+    "Q": {
+      "item": "ae2:quartz_glass"
+    },
+    "S": {
+      "item": "botania:manaresource",
+      "data": 5
+    },
+    "I": {
+      "item": "botania:manaresource",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "appbot:mana_cell_housing",
+    "count": 1
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "forge:ore_shapeless",
+  "ingredients": [
+    {
+      "item": "botania:pool",
+      "data": 3
+    },
+    {
+      "item": "ae2:interface"
+    }
+  ],
+  "result": {
+    "item": "appbot:fluix_mana_pool",
+    "count": 1
+  }
+}
