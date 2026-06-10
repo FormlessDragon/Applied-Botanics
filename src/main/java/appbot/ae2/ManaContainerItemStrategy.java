@@ -120,6 +120,7 @@ public class ManaContainerItemStrategy
             return item.canReceiveManaFromItem(stack, ItemStack.EMPTY);
         }
 
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         boolean canExport() {
             return !item.isNoExport(stack) && item.canExportManaToItem(stack, ItemStack.EMPTY);
         }

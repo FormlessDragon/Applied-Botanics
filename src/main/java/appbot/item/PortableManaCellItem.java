@@ -42,7 +42,6 @@ public class PortableManaCellItem extends AbstractPortableCell implements IManaC
     }
 
     @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void addCheckedInformation(ItemStack stack, World world, List<String> lines,
             ITooltipFlag advancedTooltips) {
         super.addCheckedInformation(stack, world, lines, advancedTooltips);

@@ -10,8 +10,7 @@ final class PoolManaExtraction {
     }
 
     static int modulate(int amount, int oldMana, int newMana) {
-        var old = oldMana;
-        var requested = Math.min(amount, old);
-        return Math.max(requested, old - newMana);
+        var requested = Math.min(amount, oldMana);
+        return Math.max(requested, oldMana - newMana);
     }
 }

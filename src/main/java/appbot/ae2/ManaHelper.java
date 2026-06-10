@@ -8,6 +8,7 @@ import vazkii.botania.common.block.tile.mana.TilePool;
 
 public class ManaHelper {
 
+    @SuppressWarnings("unused")
     public static int getCapacity(IManaReceiver receiver) {
         if (receiver instanceof IManaPool pool && pool.isOutputtingPower()) {
             return receiver.getCurrentMana();

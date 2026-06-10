@@ -9,6 +9,7 @@ import ae2.api.config.Actionable;
 import ae2.api.networking.security.IActionSource;
 import ae2.api.stacks.AEItemKey;
 import ae2.api.storage.MEStorage;
+import org.jetbrains.annotations.NotNull;
 
 public class MECorporeaItemHandler implements IItemHandler {
 
@@ -36,6 +37,7 @@ public class MECorporeaItemHandler implements IItemHandler {
     }
 
     @Override
+    @NotNull
     public ItemStack getStackInSlot(int slot) {
         var entry = getItemKey(slot);
         if (entry == null) {
@@ -46,11 +48,13 @@ public class MECorporeaItemHandler implements IItemHandler {
     }
 
     @Override
+    @NotNull
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
         return stack;
     }
 
     @Override
+    @NotNull
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
         if (amount <= 0) {
             return ItemStack.EMPTY;

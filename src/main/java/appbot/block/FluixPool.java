@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import appbot.AppliedBotanics;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -14,7 +15,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.block.statemap.StateMap;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -35,7 +35,6 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import appbot.AppliedBotanics;
 import vazkii.botania.api.BotaniaAPI;
 import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.lexicon.ILexiconable;
@@ -50,6 +49,7 @@ import vazkii.botania.common.block.tile.mana.TilePool;
 import vazkii.botania.common.core.BotaniaCreativeTab;
 import vazkii.botania.common.lexicon.LexiconData;
 
+@SuppressWarnings("deprecation")
 public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconable, IModelRegister {
 
     private static final AxisAlignedBB AABB = new AxisAlignedBB(0, 0, 0, 1, 0.5, 1);
@@ -93,7 +93,7 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
 
     @Nonnull
     @Override
-    public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
+    public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
         TileEntity tile = world instanceof ChunkCache
                 ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK)
                 : world.getTileEntity(pos);
@@ -106,11 +106,6 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
         return AABB;
-    }
-
-    @Override
-    public int damageDropped(IBlockState state) {
-        return 0;
     }
 
     @Override
@@ -140,18 +135,13 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
     }
 
     @Override
-    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> items) {
-        items.add(new ItemStack(this));
-    }
-
-    @Override
     public boolean hasTileEntity(IBlockState state) {
         return true;
     }
 
     @Nonnull
     @Override
-    public TileEntity createTileEntity(@Nonnull World world, @Nonnull IBlockState state) {
+    public TileEntity createTileEntity(World world, IBlockState state) {
         return new FluixPoolBlockEntity();
     }
 
@@ -172,8 +162,8 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
     }
 
     @Override
-    public void addCollisionBoxToList(IBlockState state, @Nonnull World world, @Nonnull BlockPos pos,
-            @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> boxes, Entity entity,
+    public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos,
+            AxisAlignedBB entityBox, List<AxisAlignedBB> boxes, @Nullable Entity entity,
             boolean isActualState) {
         addCollisionBoxToList(pos, entityBox, boxes, BOTTOM_AABB);
         addCollisionBoxToList(pos, entityBox, boxes, NORTH_AABB);
@@ -183,7 +173,7 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
     }
 
     @Override
-    public boolean isSideSolid(IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos,
+    public boolean isSideSolid(IBlockState state, IBlockAccess world, BlockPos pos,
             EnumFacing side) {
         return side == EnumFacing.DOWN;
     }

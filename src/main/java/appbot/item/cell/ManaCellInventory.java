@@ -98,7 +98,7 @@ public class ManaCellInventory implements StorageCell {
             return 0;
         }
 
-        var inserted = Math.min(Math.max(0, getMaxMana() - this.storedMana), amount);
+        var inserted = Math.clamp(getMaxMana() - this.storedMana, 0, amount);
 
         if (mode == Actionable.MODULATE) {
             this.storedMana += inserted;

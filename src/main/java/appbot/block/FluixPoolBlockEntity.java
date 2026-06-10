@@ -95,6 +95,7 @@ public class FluixPoolBlockEntity extends TilePool implements IGridConnectedTile
                 Actionable.SIMULATE, actionSource));
     }
 
+    @SuppressWarnings("unused")
     public int getMaxMana() {
         IGrid grid = getMainNode().getGrid();
 

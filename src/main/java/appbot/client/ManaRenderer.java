@@ -99,6 +99,7 @@ public class ManaRenderer implements AEKeyRenderHandler<ManaKey> {
         return ManaKeyType.MANA;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static void drawQuad(int x, int y, int width, int height, TextureAtlasSprite sprite) {
         Tessellator tessellator = Tessellator.getInstance();
         var buffer = tessellator.getBuffer();

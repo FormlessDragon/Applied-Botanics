@@ -8,6 +8,7 @@ import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import vazkii.botania.client.integration.jei.manapool.ManaPoolRecipeCategory;
 
+@SuppressWarnings("unused")
 @JEIPlugin
 public class ABJEIPlugin implements IModPlugin {
 

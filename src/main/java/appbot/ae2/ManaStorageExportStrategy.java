@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 
 import appbot.AppliedBotanics;
-import appbot.Lookup;
+import appbot.util.Lookup;
 import vazkii.botania.api.mana.IManaReceiver;
 
 import ae2.api.behaviors.StackExportStrategy;

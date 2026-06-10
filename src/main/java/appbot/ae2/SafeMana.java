@@ -44,7 +44,7 @@ public interface SafeMana {
 }
 
 class Fail {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SafeMana.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Fail.class);
     private static final Set<String> KNOWN = new HashSet<>();
 
     static SafeMana make(IManaReceiver be) {
@@ -66,7 +66,7 @@ class Fail {
                     return 0;
                 }
 
-                var inserted = Math.min(amount, Math.max(0, ManaHelper.getCapacity(be) - be.getCurrentMana()));
+                var inserted = Math.clamp(ManaHelper.getCapacity(be) - be.getCurrentMana(), 0, amount);
                 be.recieveMana(inserted);
                 return inserted;
             }

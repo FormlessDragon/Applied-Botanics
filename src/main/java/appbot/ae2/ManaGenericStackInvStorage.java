@@ -60,6 +60,7 @@ public class ManaGenericStackInvStorage implements IManaReceiver, IManaPool, ISp
         return false;
     }
 
+    @SuppressWarnings("unused")
     public int getMaxMana() {
         var slots = 0;
 
@@ -104,7 +105,7 @@ public class ManaGenericStackInvStorage implements IManaReceiver, IManaPool, ISp
                 Predicates.instanceOf(ISparkEntity.class));
 
         if (sparks.size() == 1) {
-            return (ISparkEntity) sparks.get(0);
+            return (ISparkEntity) sparks.getFirst();
         }
 
         return null;

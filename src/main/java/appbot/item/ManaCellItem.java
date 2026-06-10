@@ -21,6 +21,7 @@ import ae2.api.upgrades.IUpgradeInventory;
 import ae2.api.upgrades.UpgradeInventories;
 import ae2.core.localization.PlayerMessages;
 import ae2.util.InteractionUtil;
+import org.jetbrains.annotations.Nullable;
 
 public class ManaCellItem extends Item implements IManaCellItem {
 
@@ -96,8 +97,8 @@ public class ManaCellItem extends Item implements IManaCellItem {
     }
 
     @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void addInformation(ItemStack stack, World world, List lines, ITooltipFlag advancedTooltips) {
+    @SuppressWarnings("unchecked")
+    public void addInformation(ItemStack stack, @Nullable World world, List lines, ITooltipFlag advancedTooltips) {
         ManaCellHandler.INSTANCE.addCellInformationToTooltip(stack, lines);
     }
 }

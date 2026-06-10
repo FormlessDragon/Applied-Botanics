@@ -28,7 +28,7 @@ dependencies {
         compileOnly "com.cleanroommc:lwjglx:1.0.0"
     }
 
-    modImplementation ":AppliedEnergistics2-Supergiant:0.0.0+e39f434d5:dev"
+    modImplementation ":AppliedEnergistics2-Supergiant:0.0.0+6331e5b92:dev"
 
     // 1.12.2 runtime dependencies used by the Supergiant development environment.
     modImplementation "curse.maven:had-enough-items-557549:7938914"

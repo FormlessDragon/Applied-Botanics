@@ -6,7 +6,8 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 
-import appbot.forge.ae2.ManaP2PTunnelPart;
+import appbot.ae2.ManaP2PTunnelPart;
+import org.spongepowered.asm.mixin.Unique;
 import vazkii.botania.api.mana.IManaPool;
 import vazkii.botania.api.mana.spark.ISparkAttachable;
 import vazkii.botania.api.mana.spark.ISparkEntity;
@@ -18,6 +19,7 @@ import ae2.tile.networking.TileCableBus;
 @Mixin(value = TileCableBus.class, remap = false)
 public abstract class ManaP2PTileCableBusMixin implements IManaPool, ISparkAttachable {
 
+    @Unique
     private ManaP2PTunnelPart.InputHandler appbot$getManaP2PHandler() {
         ManaP2PTunnelPart.InputHandler handler = null;
         for (var side : EnumFacing.VALUES) {
