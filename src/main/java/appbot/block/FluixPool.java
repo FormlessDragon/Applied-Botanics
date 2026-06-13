@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import appbot.AppliedBotanics;
+import appbot.common.ABItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -46,7 +47,6 @@ import vazkii.botania.api.wand.IWandable;
 import vazkii.botania.client.core.handler.ModelHandler;
 import vazkii.botania.client.render.IModelRegister;
 import vazkii.botania.common.block.tile.mana.TilePool;
-import vazkii.botania.common.core.BotaniaCreativeTab;
 import vazkii.botania.common.lexicon.LexiconData;
 
 @SuppressWarnings("deprecation")
@@ -67,7 +67,7 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
         setHardness(2.0F);
         setResistance(10.0F);
         setSoundType(SoundType.STONE);
-        setCreativeTab(BotaniaCreativeTab.INSTANCE);
+        setCreativeTab(ABItems.CREATIVE_TAB);
         BotaniaAPI.blacklistBlockFromMagnet(this, Short.MAX_VALUE);
         setDefaultState(blockState.getBaseState()
                 .withProperty(BotaniaStateProps.POOL_VARIANT, PoolVariant.FABULOUS)

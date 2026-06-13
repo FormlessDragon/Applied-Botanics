@@ -20,7 +20,7 @@ import ae2.api.stacks.AEKeyTypes;
 import ae2.parts.automation.StackWorldBehaviors;
 
 @Mod(modid = AppliedBotanics.MOD_ID, name = AppliedBotanics.MOD_NAME, version = AppliedBotanics.VERSION, acceptedMinecraftVersions = "[1.12.2]", dependencies = "required-after:ae2;required-after:botania")
-@SuppressWarnings("UnstableApiUsage")
+@SuppressWarnings({"UnstableApiUsage", "unused"})
 public class Appbot {
 
     @SidedProxy(clientSide = "appbot.client.ClientProxy", serverSide = "appbot.common.CommonProxy")

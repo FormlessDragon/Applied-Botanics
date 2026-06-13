@@ -3,7 +3,6 @@ package appbot.ae2;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
@@ -13,6 +12,7 @@ import vazkii.botania.api.mana.IManaItem;
 import ae2.api.behaviors.ContainerItemStrategy;
 import ae2.api.config.Actionable;
 import ae2.api.stacks.GenericStack;
+import vazkii.botania.common.core.handler.ModSounds;
 
 @SuppressWarnings("UnstableApiUsage")
 public class ManaContainerItemStrategy
@@ -71,13 +71,13 @@ public class ManaContainerItemStrategy
 
     @Override
     public void playFillSound(EntityPlayer player, ManaKey what) {
-        player.world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
+        player.world.playSound(null, player.posX, player.posY, player.posZ, ModSounds.manaPoolCraft,
                 SoundCategory.PLAYERS, 0.5F, 1.0F);
     }
 
     @Override
     public void playEmptySound(EntityPlayer player, ManaKey what) {
-        player.world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ITEM_PICKUP,
+        player.world.playSound(null, player.posX, player.posY, player.posZ, ModSounds.blackLotus,
                 SoundCategory.PLAYERS, 0.5F, 1.0F);
     }
 
