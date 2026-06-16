@@ -341,7 +341,7 @@ tasks.matching { it.name.startsWith('preRun') }.configureEach {
 
 compileJava {
     dependsOn(generateTagsSource)
-    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.named('sourcesJar').configure {

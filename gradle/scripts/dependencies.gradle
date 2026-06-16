@@ -3,9 +3,6 @@ apply from: 'gradle/scripts/helpers.gradle'
 repositories {
     // Other repositories described by default:
     // CleanroomMC: https://maven.cleanroommc.com
-    flatDir {
-        dirs("lib")
-    }
     maven {
         name = 'CurseMaven'
         url = 'https://cursemaven.com'
@@ -28,7 +25,10 @@ dependencies {
         compileOnly "com.cleanroommc:lwjglx:1.0.0"
     }
 
-    modImplementation "io.github.formlessdragon:AppliedEnergistics2-Supergiant:${ae_mod_version}:dev"
+    compileOnly "io.github.formlessdragon:AppliedEnergistics2-Supergiant:${ae_mod_version}:dev"
+    modRuntimeOnly("io.github.formlessdragon:AppliedEnergistics2-Supergiant:${ae_mod_version}:dev") {
+        transitive = false
+    }
 
     // 1.12.2 runtime dependencies used by the Supergiant development environment.
     modImplementation "curse.maven:had-enough-items-557549:7938914"
