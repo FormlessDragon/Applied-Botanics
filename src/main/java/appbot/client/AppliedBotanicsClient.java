@@ -1,11 +1,14 @@
 package appbot.client;
 
+import java.util.Objects;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -14,13 +17,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import appbot.AppliedBotanics;
 import appbot.ae2.ManaKey;
 import appbot.ae2.ManaKeyType;
+import appbot.block.FluixPoolBlockEntity;
 import appbot.common.ABItems;
 
 import ae2.api.client.AEKeyRendering;
 import ae2.items.storage.BasicStorageCell;
 import ae2.items.tools.powered.AbstractPortableCell;
-
-import java.util.Objects;
 
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(modid = AppliedBotanics.MOD_ID, value = Side.CLIENT)
@@ -28,6 +30,7 @@ public interface AppliedBotanicsClient {
 
     static void initialize() {
         AEKeyRendering.register(ManaKeyType.TYPE, ManaKey.class, new ManaRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(FluixPoolBlockEntity.class, new FluixPoolRenderer());
         registerItemColors(Minecraft.getMinecraft().getItemColors());
     }
 

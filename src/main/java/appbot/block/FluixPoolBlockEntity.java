@@ -42,6 +42,9 @@ public class FluixPoolBlockEntity extends TilePool implements IGridConnectedTile
 
     private boolean saving;
     private boolean markDirtyQueued;
+    private int syncTicks;
+    private int lastSyncedMana = Integer.MIN_VALUE;
+    private int lastSyncedManaCap = Integer.MIN_VALUE;
 
     @Override
     public boolean isFull() {
@@ -110,11 +113,32 @@ public class FluixPoolBlockEntity extends TilePool implements IGridConnectedTile
         var storage = grid.getStorageService().getInventory();
         long current = storage.extract(ManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
         long free = storage.insert(ManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
-        return Ints.saturatedCast(current + free);
+        return Ints.saturatedCast(saturatedAdd(current, free));
+    }
+
+    @Override
+    public void update() {
+        super.update();
+
+        if (this.world == null || this.world.isRemote || ++this.syncTicks % 10 != 0) {
+            return;
+        }
+
+        int mana = getCurrentMana();
+        int manaCap = getMaxMana();
+
+        if (mana != this.lastSyncedMana || manaCap != this.lastSyncedManaCap) {
+            this.lastSyncedMana = mana;
+            this.lastSyncedManaCap = manaCap;
+            markDispatchable();
+        }
     }
 
     @Override
     public void writePacketNBT(NBTTagCompound tag) {
+        int mana = getCurrentMana();
+        int manaCap = getMaxMana();
+
         try {
             saving = true;
             super.writePacketNBT(tag);
@@ -122,6 +146,8 @@ public class FluixPoolBlockEntity extends TilePool implements IGridConnectedTile
             saving = false;
         }
 
+        tag.setInteger(TAG_MANA, mana);
+        tag.setInteger(TAG_MANA_CAP, manaCap);
         this.getMainNode().saveToNBT(tag);
     }
 
@@ -265,5 +291,12 @@ public class FluixPoolBlockEntity extends TilePool implements IGridConnectedTile
         NBTTagCompound tag = new NBTTagCompound();
         super.writePacketNBT(tag);
         return tag.getInteger(TAG_MANA_CAP);
+    }
+
+    private static long saturatedAdd(long left, long right) {
+        if (right > 0 && left > Long.MAX_VALUE - right) {
+            return Long.MAX_VALUE;
+        }
+        return left + right;
     }
 }

@@ -5,8 +5,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import appbot.AppliedBotanics;
-import appbot.common.ABItems;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -36,6 +34,8 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import appbot.AppliedBotanics;
+import appbot.common.ABItems;
 import vazkii.botania.api.BotaniaAPI;
 import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.lexicon.ILexiconable;
@@ -49,9 +49,9 @@ import vazkii.botania.client.render.IModelRegister;
 import vazkii.botania.common.block.tile.mana.TilePool;
 import vazkii.botania.common.lexicon.LexiconData;
 
-@SuppressWarnings("deprecation")
 public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconable, IModelRegister {
 
+    private static final PoolVariant[] POOL_VARIANTS = PoolVariant.values();
     private static final AxisAlignedBB AABB = new AxisAlignedBB(0, 0, 0, 1, 0.5, 1);
     private static final AxisAlignedBB BOTTOM_AABB = new AxisAlignedBB(0, 0, 0, 1, 1 / 16.0, 1);
     private static final AxisAlignedBB NORTH_AABB = new AxisAlignedBB(0, 0, 15 / 16.0, 1, 0.5, 1);
@@ -87,12 +87,18 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
 
     @Nonnull
     @Override
+    @SuppressWarnings("deprecation")
     public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState();
+        if (meta < 0 || meta >= POOL_VARIANTS.length) {
+            meta = 0;
+        }
+
+        return getDefaultState().withProperty(BotaniaStateProps.POOL_VARIANT, POOL_VARIANTS[meta]);
     }
 
     @Nonnull
     @Override
+    @SuppressWarnings("deprecation")
     public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
         TileEntity tile = world instanceof ChunkCache
                 ? ((ChunkCache) world).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK)
@@ -104,6 +110,7 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
 
     @Nonnull
     @Override
+    @SuppressWarnings("deprecation")
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
         return AABB;
     }
@@ -162,6 +169,7 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos,
             AxisAlignedBB entityBox, List<AxisAlignedBB> boxes, @Nullable Entity entity,
             boolean isActualState) {
@@ -173,33 +181,39 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean isSideSolid(IBlockState state, IBlockAccess world, BlockPos pos,
             EnumFacing side) {
-        return side == EnumFacing.DOWN;
+        return isBottomFace(side);
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean isFullCube(IBlockState state) {
         return false;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean hasComparatorInputOverride(IBlockState state) {
         return true;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
         return tile instanceof FluixPoolBlockEntity pool ? pool.calculateComparatorLevel() : 0;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public EnumBlockRenderType getRenderType(IBlockState state) {
         return EnumBlockRenderType.MODEL;
     }
@@ -234,15 +248,20 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean eventReceived(IBlockState state, World world, BlockPos pos, int id, int param) {
-        super.eventReceived(state, world, pos, id, param);
         TileEntity tile = world.getTileEntity(pos);
         return tile != null && tile.receiveClientEvent(id, param);
     }
 
     @Nonnull
     @Override
+    @SuppressWarnings("deprecation")
     public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing side) {
-        return side == EnumFacing.DOWN ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+        return isBottomFace(side) ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+    }
+
+    private static boolean isBottomFace(EnumFacing side) {
+        return side == EnumFacing.DOWN;
     }
 }
