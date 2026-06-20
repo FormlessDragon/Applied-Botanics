@@ -149,13 +149,13 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
     @Nonnull
     @Override
     public TileEntity createTileEntity(World world, IBlockState state) {
-        return new FluixPoolBlockEntity();
+        return new TileFluixPool();
     }
 
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, @Nullable EntityLivingBase placer,
             ItemStack stack) {
-        if (placer instanceof EntityPlayer player && world.getTileEntity(pos) instanceof FluixPoolBlockEntity tile) {
+        if (placer instanceof EntityPlayer player && world.getTileEntity(pos) instanceof TileFluixPool tile) {
             tile.getMainNode().setOwningPlayer(player);
         }
     }
@@ -209,7 +209,7 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
     @SuppressWarnings("deprecation")
     public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        return tile instanceof FluixPoolBlockEntity pool ? pool.calculateComparatorLevel() : 0;
+        return tile instanceof TileFluixPool pool ? pool.calculateComparatorLevel() : 0;
     }
 
     @Override

@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import appbot.block.FluixPool;
-import appbot.block.FluixPoolBlockEntity;
+import appbot.block.TileFluixPool;
 
 import java.util.Objects;
 
@@ -24,7 +24,7 @@ public final class ABBlocks {
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().register(FLUIX_MANA_POOL);
-        GameRegistry.registerTileEntity(FluixPoolBlockEntity.class, AppliedBotanics.id("fluix_mana_pool"));
+        GameRegistry.registerTileEntity(TileFluixPool.class, AppliedBotanics.id("fluix_mana_pool"));
     }
 
     @SubscribeEvent

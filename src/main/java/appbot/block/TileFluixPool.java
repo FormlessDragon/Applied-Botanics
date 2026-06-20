@@ -27,7 +27,7 @@ import ae2.me.InWorldGridNode;
 import ae2.me.helpers.IGridConnectedTile;
 import ae2.me.helpers.TileNodeListener;
 
-public class FluixPoolBlockEntity extends TilePool implements IGridConnectedTile, SafeMana {
+public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeMana {
 
     private static final String TAG_MANA = "mana";
     private static final String TAG_MANA_CAP = "manaCap";
@@ -114,6 +114,19 @@ public class FluixPoolBlockEntity extends TilePool implements IGridConnectedTile
         long current = storage.extract(ManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
         long free = storage.insert(ManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
         return Ints.saturatedCast(saturatedAdd(current, free));
+    }
+
+    @Override
+    public int getAvailableSpaceForMana() {
+        IGrid grid = getMainNode().getGrid();
+
+        if (grid == null || !getMainNode().isActive()) {
+            return 0;
+        }
+
+        long free = grid.getStorageService().getInventory().insert(ManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE,
+                actionSource);
+        return Ints.saturatedCast(free);
     }
 
     @Override
@@ -208,7 +221,7 @@ public class FluixPoolBlockEntity extends TilePool implements IGridConnectedTile
     @Override
     public void validate() {
         super.validate();
-        GridHelper.onFirstTick(this, FluixPoolBlockEntity::onReady);
+        GridHelper.onFirstTick(this, TileFluixPool::onReady);
     }
 
     @Override

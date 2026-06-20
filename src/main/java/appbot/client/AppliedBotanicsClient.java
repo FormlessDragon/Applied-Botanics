@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import appbot.AppliedBotanics;
 import appbot.ae2.ManaKey;
 import appbot.ae2.ManaKeyType;
-import appbot.block.FluixPoolBlockEntity;
+import appbot.block.TileFluixPool;
 import appbot.common.ABItems;
 
 import ae2.api.client.AEKeyRendering;
@@ -30,7 +30,7 @@ public interface AppliedBotanicsClient {
 
     static void initialize() {
         AEKeyRendering.register(ManaKeyType.TYPE, ManaKey.class, new ManaRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(FluixPoolBlockEntity.class, new FluixPoolRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileFluixPool.class, new FluixPoolRenderer());
         registerItemColors(Minecraft.getMinecraft().getItemColors());
     }
 

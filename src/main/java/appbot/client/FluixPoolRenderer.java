@@ -11,15 +11,15 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import appbot.block.FluixPoolBlockEntity;
+import appbot.block.TileFluixPool;
 import vazkii.botania.client.core.handler.MiscellaneousIcons;
 import vazkii.botania.client.core.helper.ShaderHelper;
 
 @SideOnly(Side.CLIENT)
-public class FluixPoolRenderer extends TileEntitySpecialRenderer<FluixPoolBlockEntity> {
+public class FluixPoolRenderer extends TileEntitySpecialRenderer<TileFluixPool> {
 
     @Override
-    public void render(FluixPoolBlockEntity pool, double x, double y, double z, float partialTicks,
+    public void render(TileFluixPool pool, double x, double y, double z, float partialTicks,
                        int destroyStage, float alpha) {
         int mana = pool.getCurrentMana();
         int manaCap = pool.getMaxMana();
