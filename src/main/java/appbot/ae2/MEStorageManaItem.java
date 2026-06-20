@@ -55,24 +55,24 @@ public class MEStorageManaItem implements IManaItem {
 
     @Override
     public int getMana(ItemStack stack) {
-        return (int) StorageHelper.poweredExtraction(energy, storage, ManaKey.KEY, Integer.MAX_VALUE, source,
+        return (int) StorageHelper.poweredExtraction(energy, storage, AEManaKey.KEY, Integer.MAX_VALUE, source,
                 Actionable.SIMULATE);
     }
 
     @Override
     public int getMaxMana(ItemStack stack) {
-        return Ints.saturatedCast(StorageHelper.poweredExtraction(energy, storage, ManaKey.KEY, Integer.MAX_VALUE,
+        return Ints.saturatedCast(StorageHelper.poweredExtraction(energy, storage, AEManaKey.KEY, Integer.MAX_VALUE,
                 source, Actionable.SIMULATE)
-                + StorageHelper.poweredInsert(energy, storage, ManaKey.KEY, Integer.MAX_VALUE, source,
+                + StorageHelper.poweredInsert(energy, storage, AEManaKey.KEY, Integer.MAX_VALUE, source,
                         Actionable.SIMULATE));
     }
 
     @Override
     public void addMana(ItemStack stack, int mana) {
         if (mana > 0) {
-            StorageHelper.poweredInsert(energy, storage, ManaKey.KEY, mana, source);
+            StorageHelper.poweredInsert(energy, storage, AEManaKey.KEY, mana, source);
         } else {
-            StorageHelper.poweredExtraction(energy, storage, ManaKey.KEY, -mana, source);
+            StorageHelper.poweredExtraction(energy, storage, AEManaKey.KEY, -mana, source);
         }
     }
 

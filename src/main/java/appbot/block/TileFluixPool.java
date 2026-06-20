@@ -9,7 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
 import appbot.AppliedBotanics;
-import appbot.ae2.ManaKey;
+import appbot.ae2.AEManaKey;
 import appbot.ae2.SafeMana;
 import vazkii.botania.common.block.tile.mana.TilePool;
 
@@ -54,7 +54,7 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
             return true;
         }
 
-        return grid.getStorageService().getInventory().insert(ManaKey.KEY, 1, Actionable.SIMULATE, actionSource) == 0;
+        return grid.getStorageService().getInventory().insert(AEManaKey.KEY, 1, Actionable.SIMULATE, actionSource) == 0;
     }
 
     @Override
@@ -69,10 +69,10 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
         boolean changed = false;
 
         if (mana > 0) {
-            changed = StorageHelper.poweredInsert(grid.getEnergyService(), storage, ManaKey.KEY, mana,
+            changed = StorageHelper.poweredInsert(grid.getEnergyService(), storage, AEManaKey.KEY, mana,
                     actionSource) != 0;
         } else if (mana < 0) {
-            changed = StorageHelper.poweredExtraction(grid.getEnergyService(), storage, ManaKey.KEY, -mana,
+            changed = StorageHelper.poweredExtraction(grid.getEnergyService(), storage, AEManaKey.KEY, -mana,
                     actionSource) != 0;
         }
 
@@ -94,7 +94,7 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
             return 0;
         }
 
-        return Ints.saturatedCast(grid.getStorageService().getInventory().extract(ManaKey.KEY, Long.MAX_VALUE,
+        return Ints.saturatedCast(grid.getStorageService().getInventory().extract(AEManaKey.KEY, Long.MAX_VALUE,
                 Actionable.SIMULATE, actionSource));
     }
 
@@ -111,8 +111,8 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
         }
 
         var storage = grid.getStorageService().getInventory();
-        long current = storage.extract(ManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
-        long free = storage.insert(ManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
+        long current = storage.extract(AEManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
+        long free = storage.insert(AEManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
         return Ints.saturatedCast(saturatedAdd(current, free));
     }
 
@@ -124,7 +124,7 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
             return 0;
         }
 
-        long free = grid.getStorageService().getInventory().insert(ManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE,
+        long free = grid.getStorageService().getInventory().insert(AEManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE,
                 actionSource);
         return Ints.saturatedCast(free);
     }
@@ -243,8 +243,8 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
             freeMana = 0;
         } else {
             var storage = grid.getStorageService().getInventory();
-            currentMana = storage.extract(ManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
-            freeMana = storage.insert(ManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
+            currentMana = storage.extract(AEManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
+            freeMana = storage.insert(AEManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource);
         }
 
         if (currentMana == 0) {
@@ -255,7 +255,7 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
     }
 
     @Override
-    public int insert(int amount, Actionable mode) {
+    public int appbot$insert(int amount, Actionable mode) {
         IGrid grid = getMainNode().getGrid();
 
         if (grid == null || !getMainNode().isActive()) {
@@ -263,7 +263,7 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
         }
 
         var storage = grid.getStorageService().getInventory();
-        long inserted = StorageHelper.poweredInsert(grid.getEnergyService(), storage, ManaKey.KEY, amount, actionSource,
+        long inserted = StorageHelper.poweredInsert(grid.getEnergyService(), storage, AEManaKey.KEY, amount, actionSource,
                 mode);
 
         if (inserted != 0 && mode == Actionable.MODULATE) {
@@ -275,7 +275,7 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
     }
 
     @Override
-    public int extract(int amount, Actionable mode) {
+    public int appbot$extract(int amount, Actionable mode) {
         IGrid grid = getMainNode().getGrid();
 
         if (grid == null || !getMainNode().isActive()) {
@@ -283,7 +283,7 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
         }
 
         var storage = grid.getStorageService().getInventory();
-        long extracted = StorageHelper.poweredExtraction(grid.getEnergyService(), storage, ManaKey.KEY, amount,
+        long extracted = StorageHelper.poweredExtraction(grid.getEnergyService(), storage, AEManaKey.KEY, amount,
                 actionSource, mode);
 
         if (extracted != 0 && mode == Actionable.MODULATE) {

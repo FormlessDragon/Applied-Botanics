@@ -16,18 +16,18 @@ import ae2.api.stacks.AEKey;
 import ae2.api.stacks.AEKeyType;
 import ae2.api.stacks.AmountFormat;
 
-public class ManaKey extends AEKey {
+public class AEManaKey extends AEKey {
 
-    public static final AEKey KEY = new ManaKey();
+    public static final AEKey KEY = new AEManaKey();
 
     private static final ResourceLocation ID = new ResourceLocation("botania", "mana");
 
-    private ManaKey() {
+    private AEManaKey() {
     }
 
     @Override
     public AEKeyType getType() {
-        return ManaKeyType.TYPE;
+        return AEManaKeyType.TYPE;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class ManaKey extends AEKey {
 
     @Override
     protected ITextComponent computeDisplayName() {
-        return ManaKeyType.MANA;
+        return AEManaKeyType.MANA;
     }
 
     @Override
@@ -79,17 +79,8 @@ public class ManaKey extends AEKey {
     }
 
     @Override
-    public boolean isTagged(String tag) {
-        return false;
-    }
-
-    @Override
     public NBTBase get(String componentId) {
         return null;
     }
 
-    @Override
-    public boolean hasComponents() {
-        return false;
-    }
 }

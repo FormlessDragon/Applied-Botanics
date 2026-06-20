@@ -16,13 +16,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import appbot.ae2.ManaKey;
-import appbot.ae2.ManaKeyType;
+import appbot.ae2.AEManaKey;
+import appbot.ae2.AEManaKeyType;
 
 import ae2.api.client.AEKeyRenderHandler;
 
 @SideOnly(Side.CLIENT)
-public class ManaRenderer implements AEKeyRenderHandler<ManaKey> {
+public class ManaRenderer implements AEKeyRenderHandler<AEManaKey> {
     private static final ResourceLocation MANA_WATER = new ResourceLocation("botania", "blocks/mana_water");
 
     private TextureAtlasSprite waterSprite;
@@ -36,7 +36,7 @@ public class ManaRenderer implements AEKeyRenderHandler<ManaKey> {
     }
 
     @Override
-    public void drawInGui(Minecraft minecraft, int x, int y, ManaKey stack) {
+    public void drawInGui(Minecraft minecraft, int x, int y, AEManaKey stack) {
         lazyInitSprite();
         minecraft.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
@@ -56,7 +56,7 @@ public class ManaRenderer implements AEKeyRenderHandler<ManaKey> {
     }
 
     @Override
-    public void drawOnBlockFace(ManaKey what, float scale, int combinedLight, World world) {
+    public void drawOnBlockFace(AEManaKey what, float scale, int combinedLight, World world) {
         lazyInitSprite();
 
         // In comparison to items, make it _slightly_ smaller because item icons
@@ -95,8 +95,8 @@ public class ManaRenderer implements AEKeyRenderHandler<ManaKey> {
     }
 
     @Override
-    public ITextComponent getDisplayName(ManaKey stack) {
-        return ManaKeyType.MANA;
+    public ITextComponent getDisplayName(AEManaKey stack) {
+        return AEManaKeyType.MANA;
     }
 
     @SuppressWarnings("SameParameterValue")

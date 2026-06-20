@@ -91,7 +91,7 @@ public class ManaP2PTunnelPart extends P2PTunnelPart<ManaP2PTunnelPart> {
         @Override
         public void recieveMana(int mana) {
             if (mana > 0) {
-                insert(mana, Actionable.MODULATE);
+                appbot$insert(mana, Actionable.MODULATE);
             }
         }
 
@@ -152,7 +152,7 @@ public class ManaP2PTunnelPart extends P2PTunnelPart<ManaP2PTunnelPart> {
         }
 
         @Override
-        public int insert(int amount, Actionable mode) {
+        public int appbot$insert(int amount, Actionable mode) {
             if (amount <= 0) {
                 return 0;
             }
@@ -175,18 +175,18 @@ public class ManaP2PTunnelPart extends P2PTunnelPart<ManaP2PTunnelPart> {
                 if (safeMana == null) {
                     continue;
                 }
-                remaining -= safeMana.insert(remaining, mode);
+                remaining -= safeMana.appbot$insert(remaining, mode);
             }
 
             var inserted = amount - remaining;
             if (mode == Actionable.MODULATE && inserted > 0) {
-                deductTransportCost(inserted / 100L, ManaKeyType.TYPE);
+                deductTransportCost(inserted / 100L, AEManaKeyType.TYPE);
             }
             return inserted;
         }
 
         @Override
-        public int extract(int amount, Actionable mode) {
+        public int appbot$extract(int amount, Actionable mode) {
             return 0;
         }
     }

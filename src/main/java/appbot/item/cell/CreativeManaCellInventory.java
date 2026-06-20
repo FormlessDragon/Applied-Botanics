@@ -3,7 +3,7 @@ package appbot.item.cell;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 
-import appbot.ae2.ManaKey;
+import appbot.ae2.AEManaKey;
 
 import ae2.api.config.Actionable;
 import ae2.api.networking.security.IActionSource;
@@ -22,22 +22,22 @@ public class CreativeManaCellInventory implements StorageCell {
 
     @Override
     public long insert(AEKey what, long amount, Actionable mode, IActionSource source) {
-        return what instanceof ManaKey ? amount : 0;
+        return what instanceof AEManaKey ? amount : 0;
     }
 
     @Override
     public long extract(AEKey what, long amount, Actionable mode, IActionSource source) {
-        return what instanceof ManaKey ? amount : 0;
+        return what instanceof AEManaKey ? amount : 0;
     }
 
     @Override
     public void getAvailableStacks(KeyCounter out) {
-        out.add(ManaKey.KEY, 1L << 53);
+        out.add(AEManaKey.KEY, 1L << 53);
     }
 
     @Override
     public boolean isPreferredStorageFor(AEKey what, IActionSource source) {
-        return what instanceof ManaKey;
+        return what instanceof AEManaKey;
     }
 
     @Override

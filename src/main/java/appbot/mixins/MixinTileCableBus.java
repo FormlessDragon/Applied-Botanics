@@ -17,7 +17,7 @@ import ae2.api.parts.IPartHost;
 import ae2.tile.networking.TileCableBus;
 
 @Mixin(value = TileCableBus.class, remap = false)
-public abstract class ManaP2PTileCableBusMixin implements IManaPool, ISparkAttachable {
+public abstract class MixinTileCableBus implements IManaPool, ISparkAttachable {
 
     @Unique
     private ManaP2PTunnelPart.InputHandler appbot$getManaP2PHandler() {

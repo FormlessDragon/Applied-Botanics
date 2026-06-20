@@ -8,13 +8,12 @@ import vazkii.botania.common.block.tile.mana.TilePool;
 
 public class ManaHelper {
 
-    @SuppressWarnings("unused")
     public static int getCapacity(IManaReceiver receiver) {
         if (receiver instanceof IManaPool pool && pool.isOutputtingPower()) {
             return receiver.getCurrentMana();
         } else if (receiver instanceof ISparkAttachable sparkAttachable) {
             return receiver.getCurrentMana() + sparkAttachable.getAvailableSpaceForMana();
-        } else if (receiver instanceof IManaPool pool) {
+        } else if (receiver instanceof IManaPool) {
             return receiver.getCurrentMana() + TilePool.MAX_MANA;
         } else if (receiver instanceof IManaCollector collector) {
             return collector.getMaxMana();

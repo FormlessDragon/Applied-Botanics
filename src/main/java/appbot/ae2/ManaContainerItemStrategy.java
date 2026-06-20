@@ -16,14 +16,14 @@ import vazkii.botania.common.core.handler.ModSounds;
 
 @SuppressWarnings("UnstableApiUsage")
 public class ManaContainerItemStrategy
-        implements ContainerItemStrategy<ManaKey, ManaContainerItemStrategy.ManaItemContext> {
+        implements ContainerItemStrategy<AEManaKey, ManaContainerItemStrategy.ManaItemContext> {
 
     @Override
     public @Nullable GenericStack getContainedStack(ItemStack stack) {
         var context = findManaItem(stack);
 
         if (context != null) {
-            return new GenericStack(ManaKey.KEY, context.getMana());
+            return new GenericStack(AEManaKey.KEY, context.getMana());
         } else {
             return null;
         }
@@ -40,7 +40,7 @@ public class ManaContainerItemStrategy
     }
 
     @Override
-    public long extract(ManaItemContext item, ManaKey what, long amount, Actionable mode) {
+    public long extract(ManaItemContext item, AEManaKey what, long amount, Actionable mode) {
         if (!item.canExport()) {
             return 0;
         }
@@ -55,7 +55,7 @@ public class ManaContainerItemStrategy
     }
 
     @Override
-    public long insert(ManaItemContext item, ManaKey what, long amount, Actionable mode) {
+    public long insert(ManaItemContext item, AEManaKey what, long amount, Actionable mode) {
         if (!item.canReceive()) {
             return 0;
         }
@@ -70,13 +70,13 @@ public class ManaContainerItemStrategy
     }
 
     @Override
-    public void playFillSound(EntityPlayer player, ManaKey what) {
+    public void playFillSound(EntityPlayer player, AEManaKey what) {
         player.world.playSound(null, player.posX, player.posY, player.posZ, ModSounds.manaPoolCraft,
                 SoundCategory.PLAYERS, 0.5F, 1.0F);
     }
 
     @Override
-    public void playEmptySound(EntityPlayer player, ManaKey what) {
+    public void playEmptySound(EntityPlayer player, AEManaKey what) {
         player.world.playSound(null, player.posX, player.posY, player.posZ, ModSounds.blackLotus,
                 SoundCategory.PLAYERS, 0.5F, 1.0F);
     }
@@ -87,7 +87,7 @@ public class ManaContainerItemStrategy
             return null;
         }
 
-        return new GenericStack(ManaKey.KEY, item.getMana());
+        return new GenericStack(AEManaKey.KEY, item.getMana());
     }
 
     private static @Nullable ManaItemContext findManaItem(ItemStack stack) {

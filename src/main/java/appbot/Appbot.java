@@ -9,8 +9,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import appbot.ae2.ManaContainerItemStrategy;
 import appbot.ae2.ManaExternalStorageStrategy;
-import appbot.ae2.ManaKey;
-import appbot.ae2.ManaKeyType;
+import appbot.ae2.AEManaKey;
+import appbot.ae2.AEManaKeyType;
 import appbot.ae2.ManaStorageExportStrategy;
 import appbot.ae2.ManaStorageImportStrategy;
 
@@ -33,14 +33,14 @@ public class Appbot {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        AEKeyTypes.register(ManaKeyType.TYPE);
+        AEKeyTypes.register(AEManaKeyType.TYPE);
 
-        StackWorldBehaviors.registerImportStrategy(ManaKeyType.TYPE, ManaStorageImportStrategy::new);
-        StackWorldBehaviors.registerExportStrategy(ManaKeyType.TYPE, ManaStorageExportStrategy::new);
-        StackWorldBehaviors.registerExternalStorageStrategy(ManaKeyType.TYPE, ManaExternalStorageStrategy::new);
+        StackWorldBehaviors.registerImportStrategy(AEManaKeyType.TYPE, ManaStorageImportStrategy::new);
+        StackWorldBehaviors.registerExportStrategy(AEManaKeyType.TYPE, ManaStorageExportStrategy::new);
+        StackWorldBehaviors.registerExternalStorageStrategy(AEManaKeyType.TYPE, ManaExternalStorageStrategy::new);
 
-        ContainerItemStrategy.register(ManaKeyType.TYPE, ManaKey.class, new ManaContainerItemStrategy());
-        GenericSlotCapacities.register(ManaKeyType.TYPE, 500000L);
+        ContainerItemStrategy.register(AEManaKeyType.TYPE, AEManaKey.class, new ManaContainerItemStrategy());
+        GenericSlotCapacities.register(AEManaKeyType.TYPE, 500000L);
 
         ABItems.init();
         proxy.init(event);

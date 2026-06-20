@@ -15,7 +15,6 @@ import ae2.api.behaviors.StackTransferContext;
 import ae2.api.config.Actionable;
 import ae2.core.AELog;
 
-@SuppressWarnings("UnstableApiUsage")
 public class ManaStorageImportStrategy implements StackImportStrategy {
 
     private final Lookup<IManaReceiver, EnumFacing> apiCache;
@@ -30,11 +29,11 @@ public class ManaStorageImportStrategy implements StackImportStrategy {
 
     @Override
     public boolean transfer(StackTransferContext context) {
-        if (!context.isKeyTypeEnabled(ManaKeyType.TYPE)) {
+        if (!context.isKeyTypeEnabled(AEManaKeyType.TYPE)) {
             return false;
         }
 
-        if (context.isInFilter(ManaKey.KEY) == context.isInverted()) {
+        if (context.isInFilter(AEManaKey.KEY) == context.isInverted()) {
             return false;
         }
 
@@ -44,7 +43,7 @@ public class ManaStorageImportStrategy implements StackImportStrategy {
             return false;
         }
 
-        var amountPerOperation = ManaKeyType.TYPE.getAmountPerOperation();
+        var amountPerOperation = AEManaKeyType.TYPE.getAmountPerOperation();
         long maxTransfer = context.getOperationsRemaining()
                 * (long) amountPerOperation;
 
@@ -54,21 +53,21 @@ public class ManaStorageImportStrategy implements StackImportStrategy {
 
         // see how much we could take
         var inventory = context.getInternalStorage().getInventory();
-        var simulate = inventory.insert(ManaKey.KEY, maxTransfer, Actionable.SIMULATE, context.getActionSource());
+        var simulate = inventory.insert(AEManaKey.KEY, maxTransfer, Actionable.SIMULATE, context.getActionSource());
 
         // take up to that much
-        var extracted = receiver.extract(Ints.saturatedCast(simulate), Actionable.MODULATE);
+        var extracted = receiver.appbot$extract(Ints.saturatedCast(simulate), Actionable.MODULATE);
 
-        // insert to network
-        var inserted = inventory.insert(ManaKey.KEY, extracted, Actionable.MODULATE, context.getActionSource());
+        // appbot$insert to network
+        var inserted = inventory.insert(AEManaKey.KEY, extracted, Actionable.MODULATE, context.getActionSource());
 
         if (inserted < extracted) {
             // try to give back overflow
             var difference = extracted - inserted;
-            difference -= receiver.insert(Ints.saturatedCast(difference), Actionable.MODULATE);
+            difference -= receiver.appbot$insert(Ints.saturatedCast(difference), Actionable.MODULATE);
 
             if (difference != 0) {
-                AELog.warn("Extracted %d Mana from adjacent storage and voided it because network refused insert");
+                AELog.warn("Extracted %d Mana from adjacent storage and voided it because network refused appbot$insert");
             }
         }
 

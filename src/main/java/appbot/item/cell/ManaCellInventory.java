@@ -6,8 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.ITextComponent;
 
-import appbot.ae2.ManaKey;
-import appbot.ae2.ManaKeyType;
+import appbot.ae2.AEManaKey;
+import appbot.ae2.AEManaKeyType;
 
 import ae2.api.config.Actionable;
 import ae2.api.networking.security.IActionSource;
@@ -70,7 +70,7 @@ public class ManaCellInventory implements StorageCell {
     }
 
     private long getMaxMana() {
-        return this.cellType.getTotalBytes() * ManaKeyType.TYPE.getAmountPerByte();
+        return this.cellType.getTotalBytes() * AEManaKeyType.TYPE.getAmountPerByte();
     }
 
     protected long getTotalBytes() {
@@ -78,7 +78,7 @@ public class ManaCellInventory implements StorageCell {
     }
 
     protected long getUsedBytes() {
-        var amountPerByte = ManaKeyType.TYPE.getAmountPerByte();
+        var amountPerByte = AEManaKeyType.TYPE.getAmountPerByte();
         return (this.storedMana + amountPerByte - 1) / amountPerByte;
     }
 
@@ -94,7 +94,7 @@ public class ManaCellInventory implements StorageCell {
 
     @Override
     public long insert(AEKey what, long amount, Actionable mode, IActionSource source) {
-        if (!(what instanceof ManaKey)) {
+        if (!(what instanceof AEManaKey)) {
             return 0;
         }
 
@@ -110,7 +110,7 @@ public class ManaCellInventory implements StorageCell {
 
     @Override
     public long extract(AEKey what, long amount, Actionable mode, IActionSource source) {
-        if (!(what instanceof ManaKey)) {
+        if (!(what instanceof AEManaKey)) {
             return 0;
         }
 
@@ -142,7 +142,7 @@ public class ManaCellInventory implements StorageCell {
     @Override
     public void getAvailableStacks(KeyCounter out) {
         if (this.storedMana > 0) {
-            out.add(ManaKey.KEY, this.storedMana);
+            out.add(AEManaKey.KEY, this.storedMana);
         }
     }
 

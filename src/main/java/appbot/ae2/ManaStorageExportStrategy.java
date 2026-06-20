@@ -19,7 +19,6 @@ import ae2.api.config.Actionable;
 import ae2.api.stacks.AEKey;
 import ae2.api.storage.StorageHelper;
 
-@SuppressWarnings("UnstableApiUsage")
 public class ManaStorageExportStrategy implements StackExportStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ManaStorageExportStrategy.class);
@@ -36,7 +35,7 @@ public class ManaStorageExportStrategy implements StackExportStrategy {
 
     @Override
     public long transfer(StackTransferContext context, AEKey what, long amount) {
-        if (!(what instanceof ManaKey)) {
+        if (!(what instanceof AEManaKey)) {
             return 0;
         }
 
@@ -59,7 +58,7 @@ public class ManaStorageExportStrategy implements StackExportStrategy {
                 context.getActionSource(),
                 Actionable.SIMULATE);
 
-        wasInserted = receiver.insert(Ints.saturatedCast(extracted), Actionable.SIMULATE);
+        wasInserted = receiver.appbot$insert(Ints.saturatedCast(extracted), Actionable.SIMULATE);
 
         if (wasInserted > 0) {
             extracted = StorageHelper.poweredExtraction(
@@ -70,7 +69,7 @@ public class ManaStorageExportStrategy implements StackExportStrategy {
                     context.getActionSource(),
                     Actionable.MODULATE);
 
-            wasInserted = receiver.insert(Ints.saturatedCast(extracted), Actionable.MODULATE);
+            wasInserted = receiver.appbot$insert(Ints.saturatedCast(extracted), Actionable.MODULATE);
 
             if (wasInserted < extracted) {
                 // Be nice and try to give the overflow back
@@ -78,7 +77,7 @@ public class ManaStorageExportStrategy implements StackExportStrategy {
                 leftover -= inv.getInventory().insert(what, leftover, Actionable.MODULATE, context.getActionSource());
 
                 if (leftover > 0) {
-                    LOGGER.error("Storage export: adjacent block unexpectedly refused insert, voided {} Mana",
+                    LOGGER.error("Storage export: adjacent block unexpectedly refused appbot$insert, voided {} Mana",
                             leftover);
                 }
             }
@@ -89,7 +88,7 @@ public class ManaStorageExportStrategy implements StackExportStrategy {
 
     @Override
     public long push(AEKey what, long amount, Actionable mode) {
-        if (!(what instanceof ManaKey)) {
+        if (!(what instanceof AEManaKey)) {
             return 0;
         }
 
@@ -99,6 +98,6 @@ public class ManaStorageExportStrategy implements StackExportStrategy {
             return 0;
         }
 
-        return receiver.insert(Ints.saturatedCast(amount), mode);
+        return receiver.appbot$insert(Ints.saturatedCast(amount), mode);
     }
 }

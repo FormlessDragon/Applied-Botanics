@@ -13,26 +13,26 @@ import vazkii.botania.common.block.tile.mana.TilePool;
 import ae2.api.stacks.AEKey;
 import ae2.api.stacks.AEKeyType;
 
-public class ManaKeyType extends AEKeyType {
+public class AEManaKeyType extends AEKeyType {
 
     public static final ITextComponent MANA = new TextComponentTranslation("gui." + AppliedBotanics.MOD_ID + ".mana");
 
-    public static final AEKeyType TYPE = new ManaKeyType();
+    public static final AEKeyType TYPE = new AEManaKeyType();
 
-    private ManaKeyType() {
-        super(AppliedBotanics.id("mana"), ManaKey.class, MANA);
+    private AEManaKeyType() {
+        super(AppliedBotanics.id("mana"), AEManaKey.class, MANA);
     }
 
     @Nullable
     @Override
     public AEKey readFromPacket(PacketBuffer input) {
-        return ManaKey.KEY;
+        return AEManaKey.KEY;
     }
 
     @Nullable
     @Override
     public AEKey loadKeyFromTag(NBTTagCompound tag) {
-        return ManaKey.KEY;
+        return AEManaKey.KEY;
     }
 
     @Override

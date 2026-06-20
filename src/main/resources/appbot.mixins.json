@@ -4,9 +4,12 @@
   "package": "appbot.mixins",
   "target": "@env(MOD)",
   "mixins": [
-    "SafeManaMixin",
-    "ManaP2PTileCableBusMixin",
-    "CorporeaInventoryHelperMixin"
+    "MixinSafeMana.MixinClampedInsertOnly",
+    "MixinSafeMana.MixinTilePool",
+    "MixinSafeMana.MixinPassthroughInsertOnly",
+    "MixinSafeMana.MixinTerraPlate",
+    "MixinInventoryHelper",
+    "MixinTileCableBus"
   ],
   "injectors": {
     "defaultRequire": 1

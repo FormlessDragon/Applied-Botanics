@@ -33,20 +33,20 @@ public class ManaGenericStackInvStorage implements IManaReceiver, IManaPool, ISp
 
     @Override
     public int getCurrentMana() {
-        return extract(Integer.MAX_VALUE, Actionable.SIMULATE);
+        return appbot$extract(Integer.MAX_VALUE, Actionable.SIMULATE);
     }
 
     @Override
     public boolean isFull() {
-        return insert(1, Actionable.SIMULATE) == 0;
+        return appbot$insert(1, Actionable.SIMULATE) == 0;
     }
 
     @Override
     public void recieveMana(int mana) {
         if (mana > 0) {
-            insert(mana, Actionable.MODULATE);
+            appbot$insert(mana, Actionable.MODULATE);
         } else if (mana < 0) {
-            extract(-mana, Actionable.MODULATE);
+            appbot$extract(-mana, Actionable.MODULATE);
         }
     }
 
@@ -67,12 +67,12 @@ public class ManaGenericStackInvStorage implements IManaReceiver, IManaPool, ISp
         for (var i = 0; i < inv.size(); i++) {
             var key = inv.getKey(i);
 
-            if (key == null || key == ManaKey.KEY) {
+            if (key == null || key == AEManaKey.KEY) {
                 slots += 1;
             }
         }
 
-        return Ints.saturatedCast(slots * inv.getMaxAmount(ManaKey.KEY));
+        return Ints.saturatedCast(slots * inv.getMaxAmount(AEManaKey.KEY));
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ManaGenericStackInvStorage implements IManaReceiver, IManaPool, ISp
 
     @Override
     public int getAvailableSpaceForMana() {
-        return insert(Integer.MAX_VALUE, Actionable.SIMULATE);
+        return appbot$insert(Integer.MAX_VALUE, Actionable.SIMULATE);
     }
 
     @Override
@@ -117,22 +117,22 @@ public class ManaGenericStackInvStorage implements IManaReceiver, IManaPool, ISp
     }
 
     @Override
-    public int insert(int amount, Actionable actionable) {
+    public int appbot$insert(int amount, Actionable actionable) {
         var inserted = 0L;
 
         for (var i = 0; i < inv.size() && inserted < amount; i++) {
-            inserted += inv.insert(i, ManaKey.KEY, amount - inserted, actionable);
+            inserted += inv.insert(i, AEManaKey.KEY, amount - inserted, actionable);
         }
 
         return (int) inserted;
     }
 
     @Override
-    public int extract(int amount, Actionable actionable) {
+    public int appbot$extract(int amount, Actionable actionable) {
         var extracted = 0L;
 
         for (var i = 0; i < inv.size() && extracted < amount; i++) {
-            extracted += inv.extract(i, ManaKey.KEY, amount - extracted, actionable);
+            extracted += inv.extract(i, AEManaKey.KEY, amount - extracted, actionable);
         }
 
         return (int) extracted;

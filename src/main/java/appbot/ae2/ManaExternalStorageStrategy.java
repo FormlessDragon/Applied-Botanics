@@ -50,11 +50,11 @@ public class ManaExternalStorageStrategy implements ExternalStorageStrategy {
                 MEStorage {
         @Override
         public long insert(AEKey what, long amount, Actionable mode, IActionSource source) {
-            if (!(what instanceof ManaKey)) {
+            if (!(what instanceof AEManaKey)) {
                 return 0;
             }
 
-            var inserted = SafeMana.conv(receiver).insert(Ints.saturatedCast(amount), mode);
+            var inserted = SafeMana.conv(receiver).appbot$insert(Ints.saturatedCast(amount), mode);
 
             if (inserted > 0 && mode == Actionable.MODULATE) {
                 changeListener.run();
@@ -65,11 +65,11 @@ public class ManaExternalStorageStrategy implements ExternalStorageStrategy {
 
         @Override
         public long extract(AEKey what, long amount, Actionable mode, IActionSource source) {
-            if (!(what instanceof ManaKey)) {
+            if (!(what instanceof AEManaKey)) {
                 return 0;
             }
 
-            var extracted = SafeMana.conv(receiver).extract(Ints.saturatedCast(amount), mode);
+            var extracted = SafeMana.conv(receiver).appbot$extract(Ints.saturatedCast(amount), mode);
 
             if (extracted > 0 && mode == Actionable.MODULATE) {
                 changeListener.run();
@@ -82,14 +82,14 @@ public class ManaExternalStorageStrategy implements ExternalStorageStrategy {
         public void getAvailableStacks(KeyCounter out) {
             var currentMana = receiver.getCurrentMana();
 
-            if (currentMana != 0 && (!extractableOnly || SafeMana.conv(receiver).extract(1, Actionable.SIMULATE) > 0)) {
-                out.add(ManaKey.KEY, currentMana);
+            if (currentMana != 0 && (!extractableOnly || SafeMana.conv(receiver).appbot$extract(1, Actionable.SIMULATE) > 0)) {
+                out.add(AEManaKey.KEY, currentMana);
             }
         }
 
         @Override
         public ITextComponent getDescription() {
-            return GuiText.ExternalStorage.text(ManaKeyType.TYPE.getDescription());
+            return GuiText.ExternalStorage.text(AEManaKeyType.TYPE.getDescription());
         }
     }
 }
