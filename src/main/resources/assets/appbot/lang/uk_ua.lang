@@ -1,0 +1,30 @@
+gui.appbot.mana=Мана
+
+itemGroup.appbot=Applied Botanics
+
+tile.appbot.fluix_mana_pool.name=Флюїсовий басейн мани
+
+item.appbot.mana_cell_housing.name=МE корпус для мана комірки
+item.appbot.creative_mana_cell.name=Творча МЕ мана комірка
+
+item.appbot.mana_cell_1k.name=1K МЕ мана комірка зберігання
+item.appbot.mana_cell_4k.name=4K МЕ мана комірка зберігання
+item.appbot.mana_cell_16k.name=16K МЕ мана комірка зберігання
+item.appbot.mana_cell_64k.name=64K МЕ мана комірка зберігання
+item.appbot.mana_cell_256k.name=256K МЕ мана комірка зберігання
+
+item.appbot.portable_mana_cell_1k.name=1K Переносна мана комірка
+item.appbot.portable_mana_cell_4k.name=4K Переносна мана комірка
+item.appbot.portable_mana_cell_16k.name=16K Переносна мана комірка
+item.appbot.portable_mana_cell_64k.name=64K Переносна мана комірка
+item.appbot.portable_mana_cell_256k.name=256K Переносна мана комірка
+
+item.appbot.mana_p2p_tunnel=Мана P2P тунель
+
+appbot.entry.fluix_mana_pool=Флюїсовий басейн мани
+appbot.page.fluix_mana_pool0=$(item)Флюїсовий басейн мани$(0) працює з $(thing)Маною$(0) із приєднаної до нього МЕ системи
+appbot.page.fluix_mana_pool1=не так вже й погано
+
+appbot.entry.mana_drives=Мана-дисковід
+appbot.page.mana_drives0=Коли-небудь хотіли кинути магію під шину з метою переходу в цифру? Ганьба Вам
+appbot.page.mana_drives1=саме те, чого vazkii ніколи не хотів

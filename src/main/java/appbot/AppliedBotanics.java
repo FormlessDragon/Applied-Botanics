@@ -1,5 +1,6 @@
 package appbot;
 
+import appbot.appbot.Tags;
 import appbot.util.AppliedBotanicsImpl;
 import appbot.util.Lookup;
 import net.minecraft.block.Block;
