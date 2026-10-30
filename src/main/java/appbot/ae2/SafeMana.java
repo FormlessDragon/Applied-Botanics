@@ -73,18 +73,23 @@ class Fail {
         return new SafeMana() {
             @Override
             public int appbot$insert(int amount, Actionable mode) {
+                if (amount <= 0) {
+                    return 0;
+                }
+
                 if (mode == Actionable.SIMULATE) {
-                    return Math.min(amount, ManaHelper.getCapacity(be) - be.getCurrentMana());
+                    return Math.clamp(ManaHelper.getCapacity(be) - be.getCurrentMana(), 0, amount);
                 }
 
                 if (be.isFull()) {
                     return 0;
                 }
 
-                var inserted = Math.clamp(ManaHelper.getCapacity(be) - be.getCurrentMana(), 0, amount);
+                var manaBefore = be.getCurrentMana();
+                be.recieveMana(amount);
+                var inserted = Math.clamp(be.getCurrentMana() - (long) manaBefore, 0, amount);
 
                 if (inserted != 0) {
-                    be.recieveMana(inserted);
                     SafeMana.notifyClients(be);
                 }
 

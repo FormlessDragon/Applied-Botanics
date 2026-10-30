@@ -22,7 +22,7 @@ class MixinPassthroughInsertOnly implements SafeMana {
         }
 
         if (mode == Actionable.SIMULATE) {
-            return Math.min(amount, ManaHelper.getCapacity(be) - be.getCurrentMana());
+            return Math.clamp(ManaHelper.getCapacity(be) - be.getCurrentMana(), 0, amount);
         }
 
         if (be.isFull()) {

@@ -22,9 +22,9 @@ item.appbot.portable_mana_cell_256k.name=256k ポータブルマナセル
 item.appbot.mana_p2p_tunnel.name=マナP2Pトンネル
 
 appbot.entry.fluix_mana_pool=フルーシュマナプール
-appbot.page.fluix_mana_pool0=$(item)フルーシュマナプール$(0)は接続されたMEシステムからの$(thing)マナ$(0)で動作します
+appbot.page.fluix_mana_pool0=&1フルーシュマナプール&0は 接続されたMEシステム からの&4マナ&0で 動作します
 appbot.page.fluix_mana_pool1=これはそれほど悪くない
 
 appbot.entry.mana_drives=マナドライブ
-appbot.page.mana_drives0=バスの下に魔法を投げて数字になりたいと思ったことはありませんか？恥ずかしい
+appbot.page.mana_drives0=バスの下に魔法を投げて数字 になりたいと思ったことは ありませんか？恥ずかしい
 appbot.page.mana_drives1=vazkiiが決して望んでいなかったもの

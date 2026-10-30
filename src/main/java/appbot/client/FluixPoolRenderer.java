@@ -21,6 +21,11 @@ public class FluixPoolRenderer extends TileEntitySpecialRenderer<TileFluixPool> 
     @Override
     public void render(TileFluixPool pool, double x, double y, double z, float partialTicks,
                        int destroyStage, float alpha) {
+        var waterSprite = MiscellaneousIcons.INSTANCE.manaWater;
+        if (waterSprite == null) {
+            return;
+        }
+
         int mana = pool.getCurrentMana();
         int manaCap = pool.getMaxMana();
 
@@ -43,7 +48,7 @@ public class FluixPoolRenderer extends TileEntitySpecialRenderer<TileFluixPool> 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
             GlStateManager.translate(x + 0.5F, y + 1.5F, z + 0.5F);
-            renderManaWater(waterLevel);
+            renderManaWater(waterLevel, waterSprite);
         } finally {
             GlStateManager.disableRescaleNormal();
             GlStateManager.disableBlend();
@@ -52,7 +57,7 @@ public class FluixPoolRenderer extends TileEntitySpecialRenderer<TileFluixPool> 
         }
     }
 
-    private static void renderManaWater(float waterLevel) {
+    private static void renderManaWater(float waterLevel, TextureAtlasSprite sprite) {
         float scale = 14F / 256F;
         float inset = -3.5F / 8F;
 
@@ -66,7 +71,7 @@ public class FluixPoolRenderer extends TileEntitySpecialRenderer<TileFluixPool> 
             GlStateManager.scale(scale, scale, scale);
 
             ShaderHelper.useShader(ShaderHelper.manaPool);
-            renderIcon(MiscellaneousIcons.INSTANCE.manaWater);
+            renderIcon(sprite);
         } finally {
             ShaderHelper.releaseShader();
             GlStateManager.enableAlpha();

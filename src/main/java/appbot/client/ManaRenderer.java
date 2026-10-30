@@ -48,7 +48,7 @@ public class ManaRenderer implements AEKeyRenderHandler<AEManaKey> {
             drawQuad(x, y, 16, 16, this.waterSprite);
         } finally {
             GlStateManager.enableBlend();
-            GlStateManager.disableDepth();
+            GlStateManager.enableDepth();
             GlStateManager.disableLighting();
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.popMatrix();

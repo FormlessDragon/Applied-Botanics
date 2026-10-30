@@ -22,7 +22,7 @@ item.appbot.portable_mana_cell_256k.name=256k Portable Mana Cell
 item.appbot.mana_p2p_tunnel.name=Mana P2P Tunnel
 
 appbot.entry.fluix_mana_pool=Fluix Mana Pool
-appbot.page.fluix_mana_pool0=The $(item)Fluix Mana Pool$(0) operates on $(thing)Mana$(0) from the attached ME system
+appbot.page.fluix_mana_pool0=The &1Fluix Mana Pool&0 operates on &4Mana&0 from the attached ME system
 appbot.page.fluix_mana_pool1=this isn't so bad
 
 appbot.entry.mana_drives=Mana Drives

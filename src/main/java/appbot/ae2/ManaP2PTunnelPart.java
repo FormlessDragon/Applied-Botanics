@@ -1,7 +1,6 @@
 package appbot.ae2;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Predicates;
@@ -165,7 +164,6 @@ public class ManaP2PTunnelPart extends P2PTunnelPart<ManaP2PTunnelPart> {
             }
 
             var remaining = amount;
-            Collections.shuffle(receivers);
             for (var receiver : receivers) {
                 if (remaining <= 0) {
                     break;
@@ -180,7 +178,7 @@ public class ManaP2PTunnelPart extends P2PTunnelPart<ManaP2PTunnelPart> {
 
             var inserted = amount - remaining;
             if (mode == Actionable.MODULATE && inserted > 0) {
-                deductTransportCost(inserted / 100L, AEManaKeyType.TYPE);
+                deductTransportCost(inserted, AEManaKeyType.TYPE);
             }
             return inserted;
         }

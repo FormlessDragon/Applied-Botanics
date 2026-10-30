@@ -36,6 +36,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import appbot.AppliedBotanics;
 import appbot.common.ABItems;
+import appbot.common.ABLexicon;
 import vazkii.botania.api.BotaniaAPI;
 import vazkii.botania.api.internal.VanillaPacketDispatcher;
 import vazkii.botania.api.lexicon.ILexiconable;
@@ -47,7 +48,6 @@ import vazkii.botania.api.wand.IWandable;
 import vazkii.botania.client.core.handler.ModelHandler;
 import vazkii.botania.client.render.IModelRegister;
 import vazkii.botania.common.block.tile.mana.TilePool;
-import vazkii.botania.common.lexicon.LexiconData;
 
 public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconable, IModelRegister {
 
@@ -83,6 +83,11 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
     @Override
     public int getMetaFromState(IBlockState state) {
         return state.getValue(BotaniaStateProps.POOL_VARIANT).ordinal();
+    }
+
+    @Override
+    public int damageDropped(IBlockState state) {
+        return getMetaFromState(state);
     }
 
     @Nonnull
@@ -237,7 +242,7 @@ public class FluixPool extends Block implements IWandHUD, IWandable, ILexiconabl
 
     @Override
     public LexiconEntry getEntry(World world, BlockPos pos, EntityPlayer player, ItemStack lexicon) {
-        return LexiconData.pool;
+        return ABLexicon.FLUIX_MANA_POOL;
     }
 
     @SideOnly(Side.CLIENT)
