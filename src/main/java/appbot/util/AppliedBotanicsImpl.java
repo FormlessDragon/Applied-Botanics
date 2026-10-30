@@ -18,7 +18,6 @@ import ae2.api.AECapabilities;
 import ae2.api.storage.MEStorage;
 import ae2.container.GuiIds;
 
-@SuppressWarnings("UnstableApiUsage")
 public enum AppliedBotanicsImpl implements AppliedBotanics {
 
     INSTANCE;
