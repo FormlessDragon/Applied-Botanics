@@ -1,8 +1,10 @@
 {
-  "required": true,
-  "minVersion": "0.8",
   "package": "appbot.mixins",
-  "target": "@env(MOD)",
+  "refmap": "appbot.refmap.json",
+  "required": true,
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8.7",
+  "compatibilityLevel": "JAVA_25",
   "mixins": [
     "MixinSafeMana.MixinClampedInsertOnly",
     "MixinSafeMana.MixinTilePool",
@@ -11,7 +13,7 @@
     "MixinInventoryHelper",
     "MixinTileCableBus"
   ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+  "server": [],
+  "client": [],
+  "setSourceFile": true
 }
