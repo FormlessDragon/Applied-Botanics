@@ -1,7 +1,6 @@
 package appbot.ae2;
 
 import com.google.common.base.Predicates;
-import com.google.common.primitives.Ints;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.item.EnumDyeColor;
@@ -18,7 +17,6 @@ import vazkii.botania.api.mana.spark.ISparkEntity;
 import ae2.api.behaviors.GenericInternalInventory;
 import ae2.api.config.Actionable;
 
-@SuppressWarnings("UnstableApiUsage")
 public class ManaGenericStackInvStorage implements IManaReceiver, IManaPool, ISparkAttachable, SafeMana {
 
     private final World level;
@@ -60,21 +58,6 @@ public class ManaGenericStackInvStorage implements IManaReceiver, IManaPool, ISp
         return false;
     }
 
-    @SuppressWarnings("unused")
-    public int getMaxMana() {
-        var slots = 0;
-
-        for (var i = 0; i < inv.size(); i++) {
-            var key = inv.getKey(i);
-
-            if (key == null || key == AEManaKey.KEY) {
-                slots += 1;
-            }
-        }
-
-        return Ints.saturatedCast(slots * inv.getMaxAmount(AEManaKey.KEY));
-    }
-
     @Override
     public EnumDyeColor getColor() {
         return EnumDyeColor.PURPLE;
@@ -113,7 +96,7 @@ public class ManaGenericStackInvStorage implements IManaReceiver, IManaPool, ISp
 
     @Override
     public boolean areIncomingTranfersDone() {
-        return !isFull();
+        return isFull();
     }
 
     @Override

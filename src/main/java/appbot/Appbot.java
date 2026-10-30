@@ -1,6 +1,7 @@
 package appbot;
 
 import appbot.common.ABItems;
+import appbot.common.ABLexicon;
 import appbot.common.CommonProxy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -43,6 +44,7 @@ public class Appbot {
         GenericSlotCapacities.register(AEManaKeyType.TYPE, 500000L);
 
         ABItems.init();
+        ABLexicon.init();
         proxy.init(event);
     }
 }

@@ -1,6 +1,8 @@
 package appbot.botania;
 
-import com.google.common.primitives.Ints;
+import java.util.List;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
@@ -13,8 +15,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class MECorporeaItemHandler implements IItemHandler {
 
+    private static final int MAX_SLOTS = 16 * 1024;
+
     private final MEStorage storage;
     private final IActionSource source;
+
+    private List<ItemEntry> slots;
 
     public MECorporeaItemHandler(MEStorage storage) {
         this(storage, IActionSource.empty());
@@ -27,24 +33,14 @@ public class MECorporeaItemHandler implements IItemHandler {
 
     @Override
     public int getSlots() {
-        long slots = 0;
-        for (var entry : storage.getAvailableStacks()) {
-            if (entry.getKey() instanceof AEItemKey itemKey && entry.getLongValue() > 0) {
-                slots = saturatedAdd(slots, getVirtualSlotCount(entry.getLongValue(), itemKey.getMaxStackSize()));
-            }
-        }
-        return Ints.saturatedCast(slots);
+        return slots().size();
     }
 
     @Override
     @NotNull
     public ItemStack getStackInSlot(int slot) {
-        var entry = getItemKey(slot);
-        if (entry == null) {
-            return ItemStack.EMPTY;
-        }
-
-        return entry.key.toStack(getVisibleAmount(entry));
+        var entry = getEntry(slot);
+        return entry == null ? ItemStack.EMPTY : entry.key().toStack(entry.amount());
     }
 
     @Override
@@ -60,56 +56,72 @@ public class MECorporeaItemHandler implements IItemHandler {
             return ItemStack.EMPTY;
         }
 
-        var entry = getItemKey(slot);
+        var entry = getEntry(slot);
         if (entry == null) {
             return ItemStack.EMPTY;
         }
 
-        var extracted = storage.extract(entry.key, Math.min(amount, entry.amount), Actionable.ofSimulate(simulate),
-                source);
-        return entry.key.toStack(Ints.saturatedCast(extracted));
+        var extracted = storage.extract(entry.key(), Math.min(amount, entry.amount()),
+                Actionable.ofSimulate(simulate), source);
+
+        if (extracted > 0 && !simulate) {
+            this.slots = null;
+        }
+
+        return entry.key().toStack((int) extracted);
     }
 
     @Override
     public int getSlotLimit(int slot) {
-        var entry = getItemKey(slot);
-        return entry == null ? 0 : getVisibleAmount(entry);
+        var entry = getEntry(slot);
+        return entry == null ? 0 : entry.amount();
     }
 
-    private static int getVisibleAmount(ItemEntry entry) {
-        return Ints.saturatedCast(Math.min(entry.amount, entry.key.getMaxStackSize()));
-    }
+    private List<ItemEntry> slots() {
+        var cached = this.slots;
 
-    private ItemEntry getItemKey(int slot) {
-        if (slot < 0) {
-            return null;
+        if (cached == null) {
+            cached = buildSlots();
+            this.slots = cached;
         }
 
-        long slotOffset = slot;
+        return cached;
+    }
+
+    private List<ItemEntry> buildSlots() {
+        var result = new ObjectArrayList<ItemEntry>();
+
         for (var entry : storage.getAvailableStacks()) {
-            if (entry.getKey() instanceof AEItemKey itemKey && entry.getLongValue() > 0) {
-                var maxStackSize = itemKey.getMaxStackSize();
-                var virtualSlots = getVirtualSlotCount(entry.getLongValue(), maxStackSize);
-                if (slotOffset < virtualSlots) {
-                    var consumed = slotOffset * maxStackSize;
-                    return new ItemEntry(itemKey, Math.min(entry.getLongValue() - consumed, maxStackSize));
-                }
-                slotOffset -= virtualSlots;
+            if (!(entry.getKey() instanceof AEItemKey itemKey) || entry.getLongValue() <= 0) {
+                continue;
+            }
+
+            var maxStackSize = itemKey.getMaxStackSize();
+            if (maxStackSize <= 0) {
+                continue;
+            }
+
+            var remaining = entry.getLongValue();
+
+            while (remaining > 0 && result.size() < MAX_SLOTS) {
+                int amount = (int) Math.min(remaining, maxStackSize);
+                result.add(new ItemEntry(itemKey, amount));
+                remaining -= amount;
+            }
+
+            if (result.size() >= MAX_SLOTS) {
+                break;
             }
         }
-        return null;
+
+        return result;
     }
 
-    private static long getVirtualSlotCount(long amount, int maxStackSize) {
-        var fullSlots = amount / maxStackSize;
-        return amount % maxStackSize == 0 ? fullSlots : fullSlots + 1;
+    private ItemEntry getEntry(int slot) {
+        var current = slots();
+        return slot < 0 || slot >= current.size() ? null : current.get(slot);
     }
 
-    private static long saturatedAdd(long a, long b) {
-        var result = a + b;
-        return result < 0 ? Long.MAX_VALUE : result;
-    }
-
-    private record ItemEntry(AEItemKey key, long amount) {
+    private record ItemEntry(AEItemKey key, int amount) {
     }
 }

@@ -7,17 +7,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 
 import appbot.ae2.ManaP2PTunnelPart;
+import appbot.ae2.SafeMana;
 import org.spongepowered.asm.mixin.Unique;
 import vazkii.botania.api.mana.IManaPool;
 import vazkii.botania.api.mana.spark.ISparkAttachable;
 import vazkii.botania.api.mana.spark.ISparkEntity;
 
+import ae2.api.config.Actionable;
 import ae2.api.parts.IPart;
 import ae2.api.parts.IPartHost;
 import ae2.tile.networking.TileCableBus;
 
 @Mixin(value = TileCableBus.class, remap = false)
-public abstract class MixinTileCableBus implements IManaPool, ISparkAttachable {
+public abstract class MixinTileCableBus implements IManaPool, ISparkAttachable, SafeMana {
 
     @Unique
     private ManaP2PTunnelPart.InputHandler appbot$getManaP2PHandler() {
@@ -113,5 +115,17 @@ public abstract class MixinTileCableBus implements IManaPool, ISparkAttachable {
     public boolean areIncomingTranfersDone() {
         var handler = appbot$getManaP2PHandler();
         return handler == null || handler.areIncomingTranfersDone();
+    }
+
+    @Override
+    public int appbot$insert(int amount, Actionable mode) {
+        var handler = appbot$getManaP2PHandler();
+        return handler == null ? 0 : handler.appbot$insert(amount, mode);
+    }
+
+    @Override
+    public int appbot$extract(int amount, Actionable mode) {
+        var handler = appbot$getManaP2PHandler();
+        return handler == null ? 0 : handler.appbot$extract(amount, mode);
     }
 }

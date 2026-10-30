@@ -67,7 +67,7 @@ public class ManaStorageImportStrategy implements StackImportStrategy {
             difference -= receiver.appbot$insert(Ints.saturatedCast(difference), Actionable.MODULATE);
 
             if (difference != 0) {
-                AELog.warn("Extracted %d Mana from adjacent storage and voided it because network refused appbot$insert");
+                AELog.warn("Extracted %d Mana from adjacent storage and voided it because network refused appbot$insert", difference);
             }
         }
 

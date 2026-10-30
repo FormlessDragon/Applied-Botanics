@@ -46,6 +46,12 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
     private int lastSyncedMana = Integer.MIN_VALUE;
     private int lastSyncedManaCap = Integer.MIN_VALUE;
 
+    private int localMana;
+    private int localManaCap = -1;
+    private int pendingMana;
+    private int cachedMana;
+    private boolean cachedManaValid;
+
     @Override
     public boolean isFull() {
         IGrid grid = getMainNode().getGrid();
@@ -59,6 +65,45 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
 
     @Override
     public void recieveMana(int mana) {
+        if (mana == 0) {
+            return;
+        }
+
+        IGrid grid = getMainNode().getGrid();
+
+        if (grid == null || !getMainNode().isActive()) {
+            if (mana > 0) {
+                this.pendingMana = (int) Math.min((long) this.pendingMana + mana, TilePool.MAX_MANA);
+            } else {
+                this.pendingMana = Math.max(0, this.pendingMana + mana);
+            }
+            markDirty();
+            return;
+        }
+
+        var storage = grid.getStorageService().getInventory();
+        boolean changed;
+
+        if (mana > 0) {
+            changed = StorageHelper.poweredInsert(grid.getEnergyService(), storage, AEManaKey.KEY, mana,
+                    actionSource) != 0;
+        } else {
+            changed = StorageHelper.poweredExtraction(grid.getEnergyService(), storage, AEManaKey.KEY, -mana,
+                    actionSource) != 0;
+        }
+
+        if (changed) {
+            this.cachedManaValid = false;
+            markDirty();
+            markDispatchable();
+        }
+    }
+
+    private void flushPendingMana() {
+        if (this.pendingMana <= 0) {
+            return;
+        }
+
         IGrid grid = getMainNode().getGrid();
 
         if (grid == null || !getMainNode().isActive()) {
@@ -66,17 +111,12 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
         }
 
         var storage = grid.getStorageService().getInventory();
-        boolean changed = false;
+        long inserted = StorageHelper.poweredInsert(grid.getEnergyService(), storage, AEManaKey.KEY, this.pendingMana,
+                actionSource);
 
-        if (mana > 0) {
-            changed = StorageHelper.poweredInsert(grid.getEnergyService(), storage, AEManaKey.KEY, mana,
-                    actionSource) != 0;
-        } else if (mana < 0) {
-            changed = StorageHelper.poweredExtraction(grid.getEnergyService(), storage, AEManaKey.KEY, -mana,
-                    actionSource) != 0;
-        }
-
-        if (changed) {
+        if (inserted > 0) {
+            this.pendingMana -= (int) Math.min(inserted, this.pendingMana);
+            this.cachedManaValid = false;
             markDirty();
             markDispatchable();
         }
@@ -87,18 +127,22 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
         IGrid grid = getMainNode().getGrid();
 
         if (grid == null || saving) {
-            return getLocalMana();
+            return Ints.saturatedCast((long) getLocalMana() + this.pendingMana);
         }
 
         if (!getMainNode().isActive()) {
-            return 0;
+            return this.pendingMana;
         }
 
-        return Ints.saturatedCast(grid.getStorageService().getInventory().extract(AEManaKey.KEY, Long.MAX_VALUE,
-                Actionable.SIMULATE, actionSource));
+        if (!this.cachedManaValid) {
+            this.cachedMana = Ints.saturatedCast(grid.getStorageService().getInventory()
+                    .extract(AEManaKey.KEY, Long.MAX_VALUE, Actionable.SIMULATE, actionSource));
+            this.cachedManaValid = true;
+        }
+
+        return Ints.saturatedCast((long) this.cachedMana + this.pendingMana);
     }
 
-    @SuppressWarnings("unused")
     public int getMaxMana() {
         IGrid grid = getMainNode().getGrid();
 
@@ -131,9 +175,16 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
 
     @Override
     public void update() {
+        this.cachedManaValid = false;
         super.update();
 
-        if (this.world == null || this.world.isRemote || ++this.syncTicks % 10 != 0) {
+        if (this.world == null || this.world.isRemote) {
+            return;
+        }
+
+        flushPendingMana();
+
+        if (++this.syncTicks % 10 != 0) {
             return;
         }
 
@@ -143,6 +194,8 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
         if (mana != this.lastSyncedMana || manaCap != this.lastSyncedManaCap) {
             this.lastSyncedMana = mana;
             this.lastSyncedManaCap = manaCap;
+            this.localMana = mana;
+            this.localManaCap = manaCap;
             markDispatchable();
         }
     }
@@ -161,12 +214,17 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
 
         tag.setInteger(TAG_MANA, mana);
         tag.setInteger(TAG_MANA_CAP, manaCap);
+        this.localMana = mana;
+        this.localManaCap = manaCap;
+
         this.getMainNode().saveToNBT(tag);
     }
 
     @Override
     public void readPacketNBT(NBTTagCompound tag) {
         super.readPacketNBT(tag);
+        this.localMana = tag.getInteger(TAG_MANA);
+        this.localManaCap = tag.getInteger(TAG_MANA_CAP);
         this.getMainNode().loadFromNBT(tag);
     }
 
@@ -267,6 +325,7 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
                 mode);
 
         if (inserted != 0 && mode == Actionable.MODULATE) {
+            this.cachedManaValid = false;
             markDirty();
             markDispatchable();
         }
@@ -287,6 +346,7 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
                 actionSource, mode);
 
         if (extracted != 0 && mode == Actionable.MODULATE) {
+            this.cachedManaValid = false;
             markDirty();
             markDispatchable();
         }
@@ -295,15 +355,15 @@ public class TileFluixPool extends TilePool implements IGridConnectedTile, SafeM
     }
 
     private int getLocalMana() {
-        NBTTagCompound tag = new NBTTagCompound();
-        super.writePacketNBT(tag);
-        return tag.getInteger(TAG_MANA);
+        return this.localMana;
     }
 
     private int getLocalManaCap() {
-        NBTTagCompound tag = new NBTTagCompound();
-        super.writePacketNBT(tag);
-        return tag.getInteger(TAG_MANA_CAP);
+        if (this.localManaCap > 0) {
+            return this.localManaCap;
+        }
+
+        return this.manaCap > 0 ? this.manaCap : TilePool.MAX_MANA;
     }
 
     private static long saturatedAdd(long left, long right) {

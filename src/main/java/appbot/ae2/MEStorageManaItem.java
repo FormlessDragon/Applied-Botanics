@@ -17,6 +17,8 @@ import ae2.api.storage.StorageCells;
 import ae2.api.storage.StorageHelper;
 import ae2.items.tools.powered.AbstractPortableCell;
 
+import appbot.item.cell.IManaCellItem;
+
 public class MEStorageManaItem implements IManaItem {
 
     private final MEStorage storage;
@@ -31,7 +33,7 @@ public class MEStorageManaItem implements IManaItem {
 
     @Nullable
     public static IManaItem forItem(ItemStack stack) {
-        if (stack.getItem() instanceof AbstractPortableCell item) {
+        if (stack.getItem() instanceof AbstractPortableCell item && stack.getItem() instanceof IManaCellItem) {
             var storage = StorageCells.getCellInventory(stack, null);
 
             if (storage == null) {

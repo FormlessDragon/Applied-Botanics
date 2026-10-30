@@ -22,7 +22,7 @@ item.appbot.portable_mana_cell_256k.name=256K Переносная мана яч
 item.appbot.mana_p2p_tunnel.name=Мана P2P тоннель
 
 appbot.entry.fluix_mana_pool=Флюисовый бассейн маны
-appbot.page.fluix_mana_pool0=$(item)Флюисовый бассейн маны$(0) работает с $(thing)Маной$(0) из присоединённой к нему МЭ системы
+appbot.page.fluix_mana_pool0=&1Флюисовый бассейн маны&0 работает с &4Маной&0 из присоединённой к нему МЭ системы
 appbot.page.fluix_mana_pool1=не так уж и плохо
 
 appbot.entry.mana_drives=Мана-дисковод

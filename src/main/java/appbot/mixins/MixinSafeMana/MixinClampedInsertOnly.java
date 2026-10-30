@@ -27,12 +27,12 @@ class MixinClampedInsertOnly implements SafeMana {
         }
 
         if (mode == Actionable.SIMULATE) {
-            return Math.min(amount, ManaHelper.getCapacity(be) - be.getCurrentMana());
+            return Math.clamp(ManaHelper.getCapacity(be) - be.getCurrentMana(), 0, amount);
         }
 
         var old = be.getCurrentMana();
         be.recieveMana(amount);
-        var inserted = be.getCurrentMana() - old;
+        var inserted = Math.clamp(be.getCurrentMana() - old, 0, amount);
 
         if (inserted != 0) {
             SafeMana.notifyClients(be);

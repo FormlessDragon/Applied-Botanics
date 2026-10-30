@@ -46,8 +46,13 @@ public class ManaCellInventory implements StorageCell {
         this.cellType = cellType;
         this.i = o;
         this.container = container;
-        this.storedMana = getTag().getLong(AMOUNT);
+        this.storedMana = readStoredMana(o);
         this.hasVoidUpgrade = cellType.getUpgrades(o).isInstalled(AEItems.VOID_CARD.item());
+    }
+
+    private static long readStoredMana(ItemStack stack) {
+        NBTTagCompound tag = stack.getTagCompound();
+        return tag == null ? 0 : tag.getLong(AMOUNT);
     }
 
     private NBTTagCompound getTag() {
@@ -144,7 +149,10 @@ public class ManaCellInventory implements StorageCell {
         }
 
         if (this.storedMana <= 0) {
-            this.getTag().removeTag(AMOUNT);
+            NBTTagCompound tag = this.i.getTagCompound();
+            if (tag != null) {
+                tag.removeTag(AMOUNT);
+            }
         } else {
             this.getTag().setLong(AMOUNT, this.storedMana);
         }

@@ -22,7 +22,7 @@ item.appbot.portable_mana_cell_256k.name=Disque de mana portable 256k
 item.appbot.mana_p2p_tunnel.name=Tunnel de mana P2P
 
 appbot.entry.fluix_mana_pool=Bassin de mana Fluix
-appbot.page.fluix_mana_pool0=Le $(item)bassin de mana Fluix$(0) opère sur le $(thing)mana$(0) du système ME auquel il est relié
+appbot.page.fluix_mana_pool0=Le &1bassin de mana Fluix&0 opère sur le &4mana&0 du système ME auquel il est relié
 appbot.page.fluix_mana_pool1=C'est pas si mal
 
 appbot.entry.mana_drives=Disques de mana

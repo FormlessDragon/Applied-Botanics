@@ -19,10 +19,10 @@ item.appbot.portable_mana_cell_16k.name=16K Переносна мана комі
 item.appbot.portable_mana_cell_64k.name=64K Переносна мана комірка
 item.appbot.portable_mana_cell_256k.name=256K Переносна мана комірка
 
-item.appbot.mana_p2p_tunnel=Мана P2P тунель
+item.appbot.mana_p2p_tunnel.name=Мана P2P тунель
 
 appbot.entry.fluix_mana_pool=Флюїсовий басейн мани
-appbot.page.fluix_mana_pool0=$(item)Флюїсовий басейн мани$(0) працює з $(thing)Маною$(0) із приєднаної до нього МЕ системи
+appbot.page.fluix_mana_pool0=&1Флюїсовий басейн мани&0 працює з &4Маною&0 із приєднаної до нього МЕ системи
 appbot.page.fluix_mana_pool1=не так вже й погано
 
 appbot.entry.mana_drives=Мана-дисковід

@@ -53,8 +53,9 @@ public class ManaCellItem extends Item implements IManaCellItem {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-        this.disassembleDrive(player.getHeldItem(hand), world, player);
-        return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
+        var disassembled = this.disassembleDrive(player.getHeldItem(hand), world, player);
+        return new ActionResult<>(disassembled ? EnumActionResult.SUCCESS : EnumActionResult.PASS,
+                player.getHeldItem(hand));
     }
 
     private boolean disassembleDrive(ItemStack stack, World world, EntityPlayer player) {
